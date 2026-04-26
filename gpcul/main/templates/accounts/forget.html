@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forgot Password – GPCUL Library System</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ============================================================
+       DESIGN TOKENS — identical to homepage / login / register
+    ============================================================ */
+        :root {
+            --navy: #0a1628;
+            --navy-mid: #112240;
+            --blue: #1a4fba;
+            --blue-mid: #2563eb;
+            --accent: #f0a500;
+            --gold: #f5c842;
+            --white: #ffffff;
+            --text-muted: #8892b0;
+            --card-bg: #162032;
+            --border: rgba(255, 255, 255, 0.08);
+            --error: #f87171;
+            --success: #34d399;
+            --warn: #fbbf24;
+
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'DM Sans', sans-serif;
+
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================================
+       RESET & BASE
+    ============================================================ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--navy);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ============================================================
+       BACKGROUND LAYERS
+    ============================================================ */
+        .page-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                linear-gradient(135deg, rgba(10, 22, 40, 0.97) 0%, rgba(17, 34, 64, 0.91) 55%, rgba(26, 79, 186, 0.2) 100%),
+                url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1600&q=80') center/cover no-repeat;
+        }
+
+        .page-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blob-1 {
+            width: 550px;
+            height: 550px;
+            background: var(--blue-mid);
+            top: -120px;
+            right: -100px;
+        }
+
+        .blob-2 {
+            width: 380px;
+            height: 380px;
+            background: var(--accent);
+            bottom: -80px;
+            left: -80px;
+        }
+
+        /* ============================================================
+       NAVBAR
+    ============================================================ */
+        .navbar {
+            position: relative;
+            z-index: 10;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-badge {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--blue), var(--accent));
+            border-radius: var(--radius-sm);
+            display: grid;
+            place-items: center;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--white);
+        }
+
+        .logo-text strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            line-height: 1.1;
+        }
+
+        .logo-text span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color var(--transition);
+        }
+
+        .nav-back:hover {
+            color: var(--white);
+        }
+
+        /* ============================================================
+       MAIN WRAPPER
+    ============================================================ */
+        .auth-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+       CARD SHELL — narrow centered card
+    ============================================================ */
+        .fp-shell {
+            width: min(500px, 100%);
+            animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fp-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.75rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle top accent bar */
+        .fp-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--accent));
+        }
+
+        /* ============================================================
+       STEP PANELS  (3 panels: email → otp → new password)
+    ============================================================ */
+        .panel {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel.active {
+            display: flex;
+        }
+
+        /* Panel icon badge */
+        .panel-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 1.6rem;
+            margin: 0 auto;
+            flex-shrink: 0;
+        }
+
+        .icon-blue {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+            border: 2px solid rgba(37, 99, 235, 0.3);
+        }
+
+        .icon-amber {
+            background: rgba(240, 165, 0, 0.12);
+            color: var(--accent);
+            border: 2px solid rgba(240, 165, 0, 0.3);
+        }
+
+        .icon-green {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--success);
+            border: 2px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .panel-header {
+            text-align: center;
+        }
+
+        .panel-header .eyebrow {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+        }
+
+        .panel-header h2 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--white);
+            line-height: 1.2;
+        }
+
+        .panel-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.85;
+            margin-top: 0.5rem;
+        }
+
+        .panel-header p strong {
+            color: var(--white);
+        }
+
+        /* ============================================================
+       FORM ELEMENTS
+    ============================================================ */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.03em;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+            transition: color var(--transition);
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--white);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-input:focus {
+            border-color: var(--blue-mid);
+            background: rgba(37, 99, 235, 0.08);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .input-wrap:focus-within .input-icon {
+            color: var(--blue-mid);
+        }
+
+        .form-input.input-error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+        }
+
+        .form-input.input-ok {
+            border-color: var(--success);
+        }
+
+        .field-msg {
+            font-size: 0.73rem;
+            display: none;
+        }
+
+        .field-msg.error {
+            color: var(--error);
+            display: block;
+        }
+
+        .field-msg.ok {
+            color: var(--success);
+            display: block;
+        }
+
+        /* Password toggle */
+        .pw-toggle {
+            position: absolute;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+            padding: 0;
+        }
+
+        .pw-toggle:hover {
+            color: var(--white);
+        }
+
+        /* Strength meter */
+        .strength-bar {
+            display: flex;
+            gap: 4px;
+            margin-top: 0.4rem;
+        }
+
+        .strength-seg {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            transition: background 0.35s ease;
+        }
+
+        .strength-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* ============================================================
+       OTP INPUT ROW
+    ============================================================ */
+        .otp-row {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .otp-box {
+            width: 56px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--white);
+            outline: none;
+            transition: var(--transition);
+            caret-color: var(--accent);
+        }
+
+        .otp-box:focus {
+            border-color: var(--blue-mid);
+            background: rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        }
+
+        .otp-box.filled {
+            border-color: var(--accent);
+            background: rgba(240, 165, 0, 0.07);
+            color: var(--accent);
+        }
+
+        /* Countdown */
+        .otp-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        #countdown {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transition: color var(--transition);
+            padding: 0;
+        }
+
+        .resend-btn.active {
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .resend-btn.active:hover {
+            color: var(--gold);
+        }
+
+        /* ============================================================
+       ALERT BOX
+    ============================================================ */
+        .alert {
+            display: none;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            line-height: 1.5;
+        }
+
+        .alert.show-error {
+            display: flex;
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: var(--error);
+        }
+
+        .alert.show-success {
+            display: flex;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: var(--success);
+        }
+
+        .alert.show-info {
+            display: flex;
+            background: rgba(240, 165, 0, 0.08);
+            border: 1px solid rgba(240, 165, 0, 0.25);
+            color: var(--warn);
+        }
+
+        /* ============================================================
+       BUTTONS
+    ============================================================ */
+        .btn-primary {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary:hover {
+            color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(240, 165, 0, 0.3);
+        }
+
+        .btn-primary span,
+        .btn-primary i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-ghost {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: rgba(255, 255, 255, 0.65);
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ============================================================
+       BACK TO LOGIN LINK
+    ============================================================ */
+        .back-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            transition: color var(--transition);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: var(--font-body);
+            width: 100%;
+        }
+
+        .back-link:hover {
+            color: var(--white);
+        }
+
+        /* ============================================================
+       STEP DOTS  (visual progress at bottom of card)
+    ============================================================ */
+        .step-dots {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transition: var(--transition);
+        }
+
+        .dot.active {
+            background: var(--blue-mid);
+            width: 22px;
+            border-radius: 4px;
+        }
+
+        .dot.done {
+            background: var(--success);
+        }
+
+        /* ============================================================
+       SUCCESS PANEL EXTRAS
+    ============================================================ */
+        .success-icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(52, 211, 153, 0.12);
+            border: 2px solid var(--success);
+            display: grid;
+            place-items: center;
+            font-size: 2rem;
+            color: var(--success);
+            margin: 0 auto;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.4);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ============================================================
+       FOOTER
+    ============================================================ */
+        .auth-footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 1.25rem;
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+        @media (max-width: 540px) {
+            .fp-card {
+                padding: 2.5rem 1.75rem;
+            }
+
+            .otp-box {
+                width: 46px;
+                height: 54px;
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .fp-card {
+                padding: 2rem 1.2rem;
+            }
+
+            .otp-box {
+                width: 40px;
+                height: 48px;
+                font-size: 1.2rem;
+                gap: 0.5rem;
+            }
+
+            .otp-row {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background layers -->
+    <div class="page-bg"></div>
+    <div class="page-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- ============================================================
+       NAVBAR
+  ============================================================ -->
+    <nav class="navbar">
+        <a href="{% url 'home'%}" class="nav-logo">
+            <div class="logo-badge">G</div>
+            <div class="logo-text">
+                <strong>GPCUL</strong>
+                <span>Library System</span>
+            </div>
+        </a>
+        <a href="{% url 'login'%}" class="nav-back">
+            <i class="fa-solid fa-arrow-left"></i> Back to Login
+        </a>
+    </nav>
+
+    <!-- ============================================================
+       MAIN
+  ============================================================ -->
+    <main class="auth-wrapper">
+        <div class="fp-shell">
+            <div class="fp-card">
+
+                <!-- ======================================================
+             PANEL 1 — Enter Email / Enrollment No.
+        ====================================================== -->
+                <div class="panel active" id="panel-1">
+
+                    <!-- Icon -->
+                    <div class="panel-icon icon-blue" style="margin-bottom:0.25rem;">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="panel-header">
+                        <p class="eyebrow">Password Recovery</p>
+                        <h2>Forgot Your Password?</h2>
+                        <p>No worries! Enter your registered email address or enrollment number and we'll send you a
+                            verification code.</p>
+                    </div>
+
+                    <!-- Alert -->
+                    <div class="alert" id="alert1"></div>
+
+                    <!-- Email / Enrollment input -->
+                    <div class="form-group">
+                        <label class="form-label" for="emailOrId">Email Address / Enrollment No.</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-envelope input-icon" id="emailIcon"></i>
+                            <input type="text" id="emailOrId" class="form-input"
+                                placeholder="you@email.com or 2023GPCUDH001" autocomplete="email"
+                                oninput="updateEmailIcon(this.value)" />
+                        </div>
+                        <p class="field-msg" id="emailOrIdMsg"></p>
+                    </div>
+
+                    <!-- Submit -->
+                    <button class="btn-primary" onclick="sendOtp()">
+                        <span>Send Verification Code</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+
+                    <!-- Back -->
+                        <a href="{% url 'login' %}" class="back-link">
+                            <i class="fa-solid fa-arrow-left"></i> Return to Login
+                        </a>
+
+                    <!-- Dots -->
+                    <div class="step-dots">
+                        <div class="dot active" id="d1"></div>
+                        <div class="dot" id="d2"></div>
+                        <div class="dot" id="d3"></div>
+                    </div>
+
+                </div>
+
+                <!-- ======================================================
+             PANEL 2 — Enter OTP
+        ====================================================== -->
+                <div class="panel" id="panel-2">
+
+                    <!-- Icon -->
+                    <div class="panel-icon icon-amber" style="margin-bottom:0.25rem;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="panel-header">
+                        <p class="eyebrow">Verification</p>
+                        <h2>Enter OTP Code</h2>
+                        <p>A 6-digit code was sent to<br /><strong id="sentToLabel">your email</strong>. It expires in
+                            10 minutes.</p>
+                    </div>
+
+                    <!-- Alert -->
+                    <div class="alert" id="alert2"></div>
+
+                    <!-- OTP boxes -->
+                    <div class="otp-row" id="otpRow">
+                        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+                            aria-label="OTP digit 1" />
+                        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+                            aria-label="OTP digit 2" />
+                        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+                            aria-label="OTP digit 3" />
+                        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+                            aria-label="OTP digit 4" />
+                        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+                            aria-label="OTP digit 5" />
+                        <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+                            aria-label="OTP digit 6" />
+                    </div>
+
+                    <!-- Countdown + Resend -->
+                    <div class="otp-meta">
+                        <span>Code expires in <span id="countdown">10:00</span></span>
+                        <button class="resend-btn" id="resendBtn" onclick="resendOtp()" disabled>Resend Code</button>
+                    </div>
+
+                    <!-- Verify button -->
+                    <button class="btn-primary" onclick="verifyOtp()">
+                        <span>Verify Code</span>
+                        <i class="fa-solid fa-circle-check"></i>
+                    </button>
+
+                    <!-- Change email -->
+                    <button class="back-link" onclick="goPanel(1)">
+                        <i class="fa-solid fa-arrow-left"></i> Change email / ID
+                    </button>
+
+                    <!-- Dots -->
+                    <div class="step-dots">
+                        <div class="dot done" id="d1b"></div>
+                        <div class="dot active" id="d2b"></div>
+                        <div class="dot" id="d3b"></div>
+                    </div>
+
+                </div>
+
+                <!-- ======================================================
+             PANEL 3 — Set New Password
+        ====================================================== -->
+                <div class="panel" id="panel-3">
+
+                    <!-- Icon -->
+                    <div class="panel-icon icon-blue" style="margin-bottom:0.25rem;">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="panel-header">
+                        <p class="eyebrow">Almost Done</p>
+                        <h2>Set New Password</h2>
+                        <p>Create a strong password. It must be at least 8 characters and include a number or symbol.
+                        </p>
+                    </div>
+
+                    <!-- Alert -->
+                    <div class="alert" id="alert3"></div>
+
+                    <!-- New password -->
+                    <div class="form-group">
+                        <label class="form-label" for="newPass">New Password</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="newPass" class="form-input" placeholder="Min. 8 characters"
+                                autocomplete="new-password" oninput="checkStrength(this.value)" />
+                            <button type="button" class="pw-toggle" onclick="togglePw('newPass', this)">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <!-- Strength bar -->
+                        <div class="strength-bar">
+                            <div class="strength-seg" id="seg1"></div>
+                            <div class="strength-seg" id="seg2"></div>
+                            <div class="strength-seg" id="seg3"></div>
+                            <div class="strength-seg" id="seg4"></div>
+                        </div>
+                        <p class="strength-label" id="strengthLabel">Enter a password to check its strength</p>
+                        <p class="field-msg" id="newPassMsg"></p>
+                    </div>
+
+                    <!-- Confirm password -->
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPass">Confirm New Password</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-shield-halved input-icon"></i>
+                            <input type="password" id="confirmPass" class="form-input"
+                                placeholder="Re-enter your new password" autocomplete="new-password" />
+                            <button type="button" class="pw-toggle" onclick="togglePw('confirmPass', this)">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <p class="field-msg" id="confirmPassMsg"></p>
+                    </div>
+
+                    <!-- Reset button -->
+                    <button class="btn-primary" onclick="resetPassword()">
+                        <span>Reset Password</span>
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+
+                    <!-- Dots -->
+                    <div class="step-dots">
+                        <div class="dot done"></div>
+                        <div class="dot done"></div>
+                        <div class="dot active"></div>
+                    </div>
+
+                </div>
+
+                <!-- ======================================================
+             PANEL 4 — Success
+        ====================================================== -->
+                <div class="panel" id="panel-4">
+
+                    <!-- Big success icon -->
+                    <div class="success-icon-wrap">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="panel-header">
+                        <p class="eyebrow">All Done!</p>
+                        <h2>Password Reset!</h2>
+                        <p>Your password has been successfully updated. You can now sign in to your GPCUL library
+                            account with your new password.</p>
+                    </div>
+
+                    <!-- Tips card -->
+                    <div
+                        style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0.6rem;">
+                        <p
+                            style="font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">
+                            Security Tips</p>
+                        <div
+                            style="display:flex;gap:0.6rem;align-items:flex-start;font-size:0.82rem;color:var(--text-muted);">
+                            <i class="fa-solid fa-circle-check"
+                                style="color:var(--success);margin-top:2px;flex-shrink:0;"></i>
+                            <span>Never share your password with anyone</span>
+                        </div>
+                        <div
+                            style="display:flex;gap:0.6rem;align-items:flex-start;font-size:0.82rem;color:var(--text-muted);">
+                            <i class="fa-solid fa-circle-check"
+                                style="color:var(--success);margin-top:2px;flex-shrink:0;"></i>
+                            <span>Use a mix of letters, numbers and symbols</span>
+                        </div>
+                        <div
+                            style="display:flex;gap:0.6rem;align-items:flex-start;font-size:0.82rem;color:var(--text-muted);">
+                            <i class="fa-solid fa-circle-check"
+                                style="color:var(--success);margin-top:2px;flex-shrink:0;"></i>
+                            <span>Change your password regularly</span>
+                        </div>
+                    </div>
+
+                    <!-- Go to login -->
+                    <button class="btn-primary" onclick="window.location.href='login.html'">
+                        <span>Go to Login</span>
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </button>
+
+                    <!-- Dots -->
+                    <div class="step-dots">
+                        <div class="dot done"></div>
+                        <div class="dot done"></div>
+                        <div class="dot done" style="background:var(--success);"></div>
+                    </div>
+
+                </div>
+
+            </div><!-- /fp-card -->
+        </div><!-- /fp-shell -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="auth-footer">
+        Govt. Polytechnic College Udhampur &mdash; Library Management System &mdash; J&K, India
+    </footer>
+
+    <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+    <script>
+        /* =============================================
+           STATE
+        ============================================= */
+        let countdownInterval = null;
+        let secondsLeft = 600; // 10 minutes
+        let otpSentTo = '';
+        const DEMO_OTP = '123456'; // demo OTP for simulation
+
+        /* =============================================
+           PANEL NAVIGATION
+        ============================================= */
+        function goPanel(n) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + n).classList.add('active');
+        }
+
+        /* =============================================
+           ICON SWAP based on input type
+        ============================================= */
+        function updateEmailIcon(val) {
+            const icon = document.getElementById('emailIcon');
+            const isEnroll = /^\d/.test(val) || /^[A-Z0-9]{4,}/i.test(val);
+            icon.className = isEnroll
+                ? 'fa-solid fa-hashtag input-icon'
+                : 'fa-solid fa-envelope input-icon';
+        }
+
+        /* =============================================
+           PANEL 1 — Send OTP
+        ============================================= */
+        function sendOtp() {
+            const input = document.getElementById('emailOrId');
+            const msg = document.getElementById('emailOrIdMsg');
+            const alert = document.getElementById('alert1');
+            const val = input.value.trim();
+
+            /* Reset */
+            input.classList.remove('input-error', 'input-ok');
+            msg.className = 'field-msg';
+            alert.className = 'alert';
+
+            if (!val) {
+                input.classList.add('input-error');
+                msg.textContent = 'Please enter your email or enrollment number.';
+                msg.className = 'field-msg error';
+                return;
+            }
+
+            /* Basic email/enrollment check */
+            const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            const isEnroll = /^[A-Z0-9]{6,20}$/i.test(val);
+
+            if (!isEmail && !isEnroll) {
+                input.classList.add('input-error');
+                msg.textContent = 'Enter a valid email address or enrollment number.';
+                msg.className = 'field-msg error';
+                return;
+            }
+
+            input.classList.add('input-ok');
+            otpSentTo = val;
+
+            /* Simulate sending */
+            const btn = document.querySelector('#panel-1 .btn-primary');
+            btn.innerHTML = '<span>Sending…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '<span>Send Verification Code</span> <i class="fa-solid fa-paper-plane"></i>';
+                btn.disabled = false;
+
+                /* Update OTP panel label */
+                const masked = isEmail
+                    ? val.replace(/(.{2}).+(@.+)/, '$1*****$2')
+                    : val.slice(0, 4) + '****' + val.slice(-3);
+                document.getElementById('sentToLabel').textContent = masked;
+
+                /* Move to OTP panel */
+                goPanel(2);
+                startCountdown();
+                focusFirstOtp();
+            }, 1400);
+        }
+
+        /* =============================================
+           COUNTDOWN TIMER
+        ============================================= */
+        function startCountdown() {
+            secondsLeft = 600;
+            clearInterval(countdownInterval);
+            updateCountdownDisplay();
+
+            countdownInterval = setInterval(() => {
+                secondsLeft--;
+                updateCountdownDisplay();
+
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').textContent = '00:00';
+                    document.getElementById('countdown').style.color = 'var(--error)';
+                    showAlert('alert2', 'info', 'Your OTP has expired. Please resend a new code.');
+
+                    const resend = document.getElementById('resendBtn');
+                    resend.classList.add('active');
+                    resend.disabled = false;
+                }
+
+                /* Enable resend after 60s */
+                if (secondsLeft === 540) {
+                    const resend = document.getElementById('resendBtn');
+                    resend.classList.add('active');
+                    resend.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+            const s = String(secondsLeft % 60).padStart(2, '0');
+            document.getElementById('countdown').textContent = `${m}:${s}`;
+        }
+
+        /* =============================================
+           OTP BOX — auto-advance & backspace
+        ============================================= */
+        function focusFirstOtp() {
+            document.querySelectorAll('.otp-box')[0].focus();
+        }
+
+        document.querySelectorAll('.otp-box').forEach((box, idx, boxes) => {
+            box.addEventListener('input', (e) => {
+                const v = e.target.value.replace(/\D/g, '');
+                e.target.value = v;
+
+                if (v) {
+                    e.target.classList.add('filled');
+                    if (idx < boxes.length - 1) boxes[idx + 1].focus();
+                } else {
+                    e.target.classList.remove('filled');
+                }
+            });
+
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !box.value && idx > 0) {
+                    boxes[idx - 1].focus();
+                    boxes[idx - 1].value = '';
+                    boxes[idx - 1].classList.remove('filled');
+                }
+            });
+
+            /* Paste support */
+            box.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasted = (e.clipboardData || window.clipboardData)
+                    .getData('text').replace(/\D/g, '').slice(0, 6);
+                pasted.split('').forEach((ch, i) => {
+                    if (boxes[i]) {
+                        boxes[i].value = ch;
+                        boxes[i].classList.add('filled');
+                    }
+                });
+                boxes[Math.min(pasted.length, boxes.length - 1)].focus();
+            });
+        });
+
+        /* =============================================
+           PANEL 2 — Verify OTP
+        ============================================= */
+        function verifyOtp() {
+            const boxes = document.querySelectorAll('.otp-box');
+            const otp = [...boxes].map(b => b.value).join('');
+            const alert = document.getElementById('alert2');
+            alert.className = 'alert';
+
+            if (otp.length < 6) {
+                showAlert('alert2', 'error', 'Please enter the complete 6-digit code.');
+                shakeOtp();
+                return;
+            }
+
+            const btn = document.querySelector('#panel-2 .btn-primary');
+            btn.innerHTML = '<span>Verifying…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '<span>Verify Code</span> <i class="fa-solid fa-circle-check"></i>';
+                btn.disabled = false;
+
+                if (otp === DEMO_OTP) {
+                    clearInterval(countdownInterval);
+                    showAlert('alert2', 'success', 'Code verified! Please set your new password.');
+                    setTimeout(() => goPanel(3), 800);
+                } else {
+                    showAlert('alert2', 'error', `Incorrect code. (Hint: use ${DEMO_OTP} for demo)`);
+                    shakeOtp();
+                    boxes.forEach(b => { b.value = ''; b.classList.remove('filled'); });
+                    boxes[0].focus();
+                }
+            }, 1200);
+        }
+
+        function shakeOtp() {
+            const row = document.getElementById('otpRow');
+            row.style.animation = 'none';
+            row.offsetHeight; // reflow
+            row.style.animation = 'shake 0.4s ease';
+        }
+
+        /* Add shake keyframes dynamically */
+        const style = document.createElement('style');
+        style.textContent = `
+      @keyframes shake {
+        0%,100%{transform:translateX(0)}
+        20%{transform:translateX(-8px)}
+        40%{transform:translateX(8px)}
+        60%{transform:translateX(-6px)}
+        80%{transform:translateX(6px)}
+      }
+    `;
+        document.head.appendChild(style);
+
+        /* =============================================
+           RESEND OTP
+        ============================================= */
+        function resendOtp() {
+            document.querySelectorAll('.otp-box').forEach(b => { b.value = ''; b.classList.remove('filled'); });
+            document.getElementById('alert2').className = 'alert';
+            document.getElementById('countdown').style.color = 'var(--accent)';
+
+            const resend = document.getElementById('resendBtn');
+            resend.classList.remove('active');
+            resend.disabled = true;
+
+            showAlert('alert2', 'info', 'A new verification code has been sent.');
+            startCountdown();
+            focusFirstOtp();
+        }
+
+        /* =============================================
+           PANEL 3 — Reset Password
+        ============================================= */
+        function resetPassword() {
+            const newPass = document.getElementById('newPass');
+            const confirmEl = document.getElementById('confirmPass');
+            const newMsg = document.getElementById('newPassMsg');
+            const confirmMsg = document.getElementById('confirmPassMsg');
+            const alert = document.getElementById('alert3');
+
+            /* Reset */
+            [newPass, confirmEl].forEach(el => el.classList.remove('input-error', 'input-ok'));
+            [newMsg, confirmMsg].forEach(el => { el.className = 'field-msg'; el.textContent = ''; });
+            alert.className = 'alert';
+
+            let valid = true;
+
+            if (!newPass.value) {
+                setFieldError(newPass, newMsg, 'Please enter a new password.');
+                valid = false;
+            } else if (newPass.value.length < 8) {
+                setFieldError(newPass, newMsg, 'Password must be at least 8 characters.');
+                valid = false;
+            } else {
+                setFieldOk(newPass, newMsg);
+            }
+
+            if (!confirmEl.value) {
+                setFieldError(confirmEl, confirmMsg, 'Please confirm your new password.');
+                valid = false;
+            } else if (confirmEl.value !== newPass.value) {
+                setFieldError(confirmEl, confirmMsg, 'Passwords do not match. Try again.');
+                valid = false;
+            } else if (valid) {
+                setFieldOk(confirmEl, confirmMsg);
+            }
+
+            if (!valid) return;
+
+            const btn = document.querySelector('#panel-3 .btn-primary');
+            btn.innerHTML = '<span>Updating password…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                goPanel(4);
+            }, 1600);
+        }
+
+        /* =============================================
+           PASSWORD STRENGTH METER
+        ============================================= */
+        function checkStrength(val) {
+            const colors = ['#f87171', '#fb923c', '#facc15', '#34d399'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            for (let i = 1; i <= 4; i++) {
+                const seg = document.getElementById('seg' + i);
+                seg.style.background = i <= score ? colors[score - 1] : 'rgba(255,255,255,0.1)';
+            }
+
+            const label = document.getElementById('strengthLabel');
+            label.textContent = val.length === 0
+                ? 'Enter a password to check its strength'
+                : `Strength: ${labels[score - 1] || 'Very Weak'}`;
+            label.style.color = val.length === 0 ? 'var(--text-muted)' : (colors[score - 1] || '#f87171');
+        }
+
+        /* =============================================
+           UTILITIES
+        ============================================= */
+        function togglePw(id, btn) {
+            const el = document.getElementById(id);
+            const hidden = el.type === 'password';
+            el.type = hidden ? 'text' : 'password';
+            btn.querySelector('i').className = hidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        }
+
+        function showAlert(alertId, type, msg) {
+            const el = document.getElementById(alertId);
+            const icons = { error: 'fa-circle-exclamation', success: 'fa-circle-check', info: 'fa-triangle-exclamation' };
+            el.innerHTML = `<i class="fa-solid ${icons[type]}"></i> <span>${msg}</span>`;
+            el.className = `alert show-${type}`;
+        }
+
+        function setFieldError(el, msgEl, msg) {
+            el.classList.add('input-error');
+            msgEl.textContent = msg;
+            msgEl.className = 'field-msg error';
+        }
+
+        function setFieldOk(el, msgEl) {
+            el.classList.add('input-ok');
+            msgEl.className = 'field-msg';
+        }
+    </script>
+
+</body>
+
+</html>

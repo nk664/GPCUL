@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register – GPCUL Library System</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ============================================================
+       DESIGN TOKENS — matching homepage
+    ============================================================ */
+        :root {
+            --navy: #0a1628;
+            --navy-mid: #112240;
+            --blue: #1a4fba;
+            --blue-mid: #2563eb;
+            --accent: #f0a500;
+            --gold: #f5c842;
+            --white: #ffffff;
+            --text-muted: #8892b0;
+            --card-bg: #162032;
+            --border: rgba(255, 255, 255, 0.08);
+            --error: #f87171;
+            --success: #34d399;
+
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'DM Sans', sans-serif;
+
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================================
+       RESET & BASE
+    ============================================================ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--navy);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ============================================================
+       BACKGROUND LAYERS
+    ============================================================ */
+        .page-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                linear-gradient(135deg, rgba(10, 22, 40, 0.97) 0%, rgba(17, 34, 64, 0.90) 55%, rgba(26, 79, 186, 0.2) 100%),
+                url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1600&q=80') center/cover no-repeat;
+        }
+
+        .page-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--blue-mid);
+            top: -150px;
+            right: -100px;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            bottom: -60px;
+            left: -60px;
+        }
+
+        /* ============================================================
+       NAVBAR
+    ============================================================ */
+        .navbar {
+            position: relative;
+            z-index: 10;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-badge {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--blue), var(--accent));
+            border-radius: var(--radius-sm);
+            display: grid;
+            place-items: center;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--white);
+        }
+
+        .logo-text strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            line-height: 1.1;
+        }
+
+        .logo-text span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color var(--transition);
+        }
+
+        .nav-back:hover {
+            color: var(--white);
+        }
+
+        /* ============================================================
+       MAIN LAYOUT
+    ============================================================ */
+        .auth-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+       PROGRESS STEPPER
+    ============================================================ */
+        .reg-shell {
+            width: min(820px, 100%);
+            animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stepper bar */
+        .stepper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex: 1;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 0.5rem;
+            transition: background var(--transition);
+        }
+
+        .step.done:not(:last-child)::after {
+            background: var(--blue-mid);
+        }
+
+        .step-bubble {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            display: grid;
+            place-items: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .step.active .step-bubble {
+            background: var(--blue-mid);
+            border-color: var(--blue-mid);
+            color: var(--white);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+        }
+
+        .step.done .step-bubble {
+            background: var(--success);
+            border-color: var(--success);
+            color: var(--navy);
+        }
+
+        .step-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: color var(--transition);
+        }
+
+        .step.active .step-label {
+            color: var(--white);
+        }
+
+        .step.done .step-label {
+            color: var(--success);
+        }
+
+        /* Card */
+        .reg-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card header */
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+        }
+
+        .card-header h1 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            color: var(--white);
+            line-height: 1.15;
+        }
+
+        .card-header p {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .card-header p a {
+            color: var(--accent);
+            font-weight: 600;
+            transition: color var(--transition);
+        }
+
+        .card-header p a:hover {
+            color: var(--gold);
+        }
+
+        /* Step counter pill */
+        .step-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .step-pill span {
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        /* ============================================================
+       FORM FIELDS (shared)
+    ============================================================ */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.03em;
+        }
+
+        .form-label .required {
+            color: var(--error);
+            font-size: 0.7rem;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            pointer-events: none;
+            transition: color var(--transition);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1rem 0.8rem 2.75rem;
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            color: var(--white);
+            transition: var(--transition);
+            outline: none;
+            appearance: none;
+        }
+
+        .form-select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892b0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .form-select option {
+            background: var(--navy-mid);
+            color: var(--white);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            border-color: var(--blue-mid);
+            background: rgba(37, 99, 235, 0.08);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .input-wrap:focus-within .input-icon {
+            color: var(--blue-mid);
+        }
+
+        .form-input.input-error,
+        .form-select.input-error {
+            border-color: var(--error);
+        }
+
+        .form-input.input-ok,
+        .form-select.input-ok {
+            border-color: var(--success);
+        }
+
+        .field-msg {
+            font-size: 0.73rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .field-msg.error {
+            color: var(--error);
+            display: block;
+        }
+
+        .field-msg.ok {
+            color: var(--success);
+            display: block;
+        }
+
+        /* Password toggle */
+        .pw-toggle {
+            position: absolute;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+            padding: 0;
+        }
+
+        .pw-toggle:hover {
+            color: var(--white);
+        }
+
+        /* Strength meter */
+        .strength-bar {
+            display: flex;
+            gap: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .strength-seg {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            transition: background 0.4s ease;
+        }
+
+        .strength-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* Photo upload */
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .photo-preview {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px dashed rgba(255, 255, 255, 0.18);
+            display: grid;
+            place-items: center;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            overflow: hidden;
+            transition: border-color var(--transition);
+            cursor: pointer;
+        }
+
+        .photo-preview:hover {
+            border-color: var(--accent);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .photo-info {
+            flex: 1;
+        }
+
+        .photo-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .btn-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.1rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-body);
+        }
+
+        .btn-upload:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Section divider */
+        .form-section-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.75rem 0 1.25rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .form-section-label::before,
+        .form-section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Terms checkbox */
+        .terms-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            margin: 1.5rem 0;
+        }
+
+        .terms-row input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--blue-mid);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .terms-row label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            cursor: pointer;
+        }
+
+        .terms-row label a {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .terms-row label a:hover {
+            color: var(--gold);
+        }
+
+        /* Nav buttons */
+        .form-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            color: var(--white);
+        }
+
+        .btn-next,
+        .btn-submit {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1.5rem;
+            background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-next::before,
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .btn-next:hover::before,
+        .btn-submit:hover::before {
+            opacity: 1;
+        }
+
+        .btn-next:hover,
+        .btn-submit:hover {
+            color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(240, 165, 0, 0.3);
+        }
+
+        .btn-next span,
+        .btn-submit span,
+        .btn-next i,
+        .btn-submit i {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+       SUCCESS SCREEN
+    ============================================================ */
+        .success-screen {
+            text-align: center;
+            padding: 2rem 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(52, 211, 153, 0.15);
+            border: 2px solid var(--success);
+            display: grid;
+            place-items: center;
+            font-size: 2rem;
+            color: var(--success);
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .success-screen h2 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            color: var(--white);
+        }
+
+        .success-screen p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            max-width: 380px;
+            line-height: 1.8;
+        }
+
+        .btn-goto-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            background: var(--accent);
+            color: var(--navy);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+        }
+
+        .btn-goto-login:hover {
+            background: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(240, 165, 0, 0.3);
+        }
+
+        /* ============================================================
+       FOOTER
+    ============================================================ */
+        .auth-footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 1.25rem;
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ============================================================
+       STEP PANELS
+    ============================================================ */
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+        @media (max-width: 640px) {
+            .reg-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stepper {
+                gap: 0;
+            }
+
+            .step-label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .reg-card {
+                padding: 1.75rem 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background layers -->
+    <div class="page-bg"></div>
+    <div class="page-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- ============================================================
+       MINIMAL NAVBAR
+  ============================================================ -->
+    <nav class="navbar">
+        <a href="{% url 'home'%}" class="nav-logo">
+            <div class="logo-badge">G</div>
+            <div class="logo-text">
+                <strong>GPCUL</strong>
+                <span>Library System</span>
+            </div>
+        </a>
+        <a href="{% url 'home'%}" class="nav-back">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+    </nav>
+
+    <!-- ============================================================
+       MAIN
+  ============================================================ -->
+    <main class="auth-wrapper">
+        <div class="reg-shell">
+
+            <!-- Stepper -->
+            <div class="stepper" id="stepper">
+                <div class="step active" id="stepEl-1">
+                    <div class="step-bubble" id="stepBubble-1">1</div>
+                    <span class="step-label">Personal Info</span>
+                </div>
+                <div class="step" id="stepEl-2">
+                    <div class="step-bubble" id="stepBubble-2">2</div>
+                    <span class="step-label">Academic Details</span>
+                </div>
+                <div class="step" id="stepEl-3">
+                    <div class="step-bubble" id="stepBubble-3">3</div>
+                    <span class="step-label">Account Setup</span>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="reg-card">
+
+                <!-- Card Header -->
+                <div class="card-header">
+                    <div>
+                        <p class="eyebrow">New Member</p>
+                        <h1 id="cardTitle">Create Your Account</h1>
+                        <p>Already registered? <a href="{% url 'login'%}">Sign in here</a></p>
+                    </div>
+                    <div class="step-pill">
+                        Step <span id="stepNum">1</span> of 3
+                    </div>
+                </div>
+
+                <!-- FORM -->
+                <form id="regForm" novalidate>
+
+                    <!-- ========== STEP 1: PERSONAL INFO ========== -->
+                    <div class="step-panel active" id="panel-1">
+
+                        <!-- Photo Upload -->
+                        <div class="form-group">
+                            <label class="form-label">Profile Photo</label>
+                            <div class="photo-upload">
+                                <div class="photo-preview" id="photoPreview"
+                                    onclick="document.getElementById('photoInput').click()">
+                                    <i class="fa-regular fa-user" id="photoIcon"></i>
+                                    <img id="photoImg" src="" alt="Preview" />
+                                </div>
+                                <div class="photo-info">
+                                    <button type="button" class="btn-upload"
+                                        onclick="document.getElementById('photoInput').click()">
+                                        <i class="fa-solid fa-upload"></i> Upload Photo
+                                    </button>
+                                    <p>JPG, PNG up to 2MB. Square recommended.</p>
+                                </div>
+                            </div>
+                            <input type="file" id="photoInput" accept="image/*" style="display:none"
+                                onchange="previewPhoto(this)" />
+                        </div>
+
+                        <div class="form-section-label">Basic Information</div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">
+                                    First Name <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="firstName" class="form-input" placeholder="e.g. Rahul" />
+                                </div>
+                                <p class="field-msg" id="firstNameMsg"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">
+                                    Last Name <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="lastName" class="form-input" placeholder="e.g. Sharma" />
+                                </div>
+                                <p class="field-msg" id="lastNameMsg"></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="dob">
+                                    Date of Birth <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-calendar input-icon"></i>
+                                    <input type="date" id="dob" class="form-input" />
+                                </div>
+                                <p class="field-msg" id="dobMsg"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="gender">
+                                    Gender <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-venus-mars input-icon"></i>
+                                    <select id="gender" class="form-input form-select">
+                                        <option value="">Select gender</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                        <option>Other</option>
+                                        <option>Prefer not to say</option>
+                                    </select>
+                                </div>
+                                <p class="field-msg" id="genderMsg"></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label class="form-label" for="phone">
+                                    Mobile Number <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="phone" class="form-input" placeholder="+91 XXXXX XXXXX"
+                                        maxlength="13" />
+                                </div>
+                                <p class="field-msg" id="phoneMsg"></p>
+                            </div>
+                        </div>
+
+                        <div class="form-nav">
+                            <button type="button" class="btn-next" onclick="goStep(2)">
+                                <span>Continue</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========== STEP 2: ACADEMIC DETAILS ========== -->
+                    <div class="step-panel" id="panel-2">
+
+                        <div class="form-section-label">Academic Information</div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="enrollNo">
+                                    Enrollment Number <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-hashtag input-icon"></i>
+                                    <input type="text" id="enrollNo" class="form-input"
+                                        placeholder="e.g. 2023GPCUDH001" />
+                                </div>
+                                <p class="field-msg" id="enrollNoMsg"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="admYear">
+                                    Admission Year <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-calendar-days input-icon"></i>
+                                    <select id="admYear" class="form-input form-select">
+                                        <option value="">Select year</option>
+                                        <option>2025</option>
+                                        <option>2024</option>
+                                        <option>2023</option>
+                                        <option>2022</option>
+                                        <option>2021</option>
+                                    </select>
+                                </div>
+                                <p class="field-msg" id="admYearMsg"></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="course">
+                                    Course / Programme <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                    <select id="course" class="form-input form-select">
+                                        <option value="">Select course</option>
+                                        <option>Civil Engineering</option>
+                                        <option>Computer Engineering</option>
+                                        <option>Electrical Engineering</option>
+                                        <option>Mechanical Engineering</option>
+                                        <option>Electronics Engineering</option>
+                                        <option>Information Technology</option>
+                                    </select>
+                                </div>
+                                <p class="field-msg" id="courseMsg"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="semester">
+                                    Semester <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-layer-group input-icon"></i>
+                                    <select id="semester" class="form-input form-select">
+                                        <option value="">Select semester</option>
+                                        <option>1st Semester</option>
+                                        <option>2nd Semester</option>
+                                        <option>3rd Semester</option>
+                                        <option>4th Semester</option>
+                                        <option>5th Semester</option>
+                                        <option>6th Semester</option>
+                                    </select>
+                                </div>
+                                <p class="field-msg" id="semesterMsg"></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label class="form-label" for="address">Address</label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-location-dot input-icon"></i>
+                                    <input type="text" id="address" class="form-input"
+                                        placeholder="Village / Town, District, J&K" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-nav">
+                            <button type="button" class="btn-back" onclick="goStep(1)">
+                                <i class="fa-solid fa-arrow-left"></i> Back
+                            </button>
+                            <button type="button" class="btn-next" onclick="goStep(3)">
+                                <span>Continue</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========== STEP 3: ACCOUNT SETUP ========== -->
+                    <div class="step-panel" id="panel-3">
+
+                        <div class="form-section-label">Login Credentials</div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label class="form-label" for="email">
+                                    Email Address <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="email" class="form-input" placeholder="you@example.com"
+                                        autocomplete="email" />
+                                </div>
+                                <p class="field-msg" id="emailMsg"></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="password">
+                                    Password <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="password" class="form-input"
+                                        placeholder="Min. 8 characters" oninput="checkStrength(this.value)"
+                                        autocomplete="new-password" />
+                                    <button type="button" class="pw-toggle" onclick="togglePw('password', this)">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                                <!-- Strength bar -->
+                                <div class="strength-bar">
+                                    <div class="strength-seg" id="seg1"></div>
+                                    <div class="strength-seg" id="seg2"></div>
+                                    <div class="strength-seg" id="seg3"></div>
+                                    <div class="strength-seg" id="seg4"></div>
+                                </div>
+                                <p class="strength-label" id="strengthLabel">Password strength will appear here</p>
+                                <p class="field-msg" id="passwordMsg"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="confirmPass">
+                                    Confirm Password <span class="required">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fa-solid fa-shield-halved input-icon"></i>
+                                    <input type="password" id="confirmPass" class="form-input"
+                                        placeholder="Re-enter password" autocomplete="new-password" />
+                                    <button type="button" class="pw-toggle" onclick="togglePw('confirmPass', this)">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="field-msg" id="confirmPassMsg"></p>
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="terms-row">
+                            <input type="checkbox" id="terms" />
+                            <label for="terms">
+                                I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a> of
+                                Govt. Polytechnic College Udhampur Library System.
+                            </label>
+                        </div>
+                        <p class="field-msg" id="termsMsg"></p>
+
+                        <div class="form-nav">
+                            <button type="button" class="btn-back" onclick="goStep(2)">
+                                <i class="fa-solid fa-arrow-left"></i> Back
+                            </button>
+                            <button type="submit" class="btn-submit">
+                                <span>Create Account</span>
+                                <i class="fa-solid fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <!-- SUCCESS SCREEN -->
+                <div class="success-screen" id="successScreen">
+                    <div class="success-icon">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2>Registration Successful!</h2>
+                    <p>
+                        Welcome to GPCUL! Your library account has been created. Your Library Card with QR Code will be
+                        sent to your registered email.
+                    </p>
+                    <button class="btn-goto-login" onclick="window.location.href='login.html'">
+                        <i class="fa-solid fa-right-to-bracket"></i> Go to Login
+                    </button>
+                </div>
+
+            </div><!-- /reg-card -->
+        </div><!-- /reg-shell -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="auth-footer">
+        Govt. Polytechnic College Udhampur &mdash; Library Management System &mdash; J&K, India
+    </footer>
+
+    <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+    <script>
+        /* --- Current step --- */
+        let currentStep = 1;
+
+        /* --- Step navigation --- */
+        function goStep(target) {
+            if (target > currentStep && !validateStep(currentStep)) return;
+
+            /* Update DOM */
+            document.getElementById('panel-' + currentStep).classList.remove('active');
+            document.getElementById('panel-' + target).classList.add('active');
+
+            /* Mark old step as done (if going forward) */
+            if (target > currentStep) {
+                const el = document.getElementById('stepEl-' + currentStep);
+                el.classList.remove('active');
+                el.classList.add('done');
+                document.getElementById('stepBubble-' + currentStep).innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                /* Going back — revert done → active */
+                const el = document.getElementById('stepEl-' + target);
+                el.classList.remove('done');
+                el.classList.add('active');
+                document.getElementById('stepBubble-' + target).innerHTML = target;
+                document.getElementById('stepEl-' + currentStep).classList.remove('active');
+            }
+
+            /* Activate new step bubble */
+            const newEl = document.getElementById('stepEl-' + target);
+            newEl.classList.remove('done');
+            newEl.classList.add('active');
+            document.getElementById('stepBubble-' + target).innerHTML = target;
+
+            /* Update pill */
+            document.getElementById('stepNum').textContent = target;
+
+            /* Update card title */
+            const titles = { 1: 'Create Your Account', 2: 'Academic Details', 3: 'Set Up Login' };
+            document.getElementById('cardTitle').textContent = titles[target];
+
+            currentStep = target;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* --- Validate each step --- */
+        function validateStep(step) {
+            let valid = true;
+
+            if (step === 1) {
+                valid = validateRequired('firstName', 'firstNameMsg', 'First name is required.') && valid;
+                valid = validateRequired('lastName', 'lastNameMsg', 'Last name is required.') && valid;
+                valid = validateRequired('dob', 'dobMsg', 'Date of birth is required.') && valid;
+                valid = validateRequired('gender', 'genderMsg', 'Please select your gender.') && valid;
+                /* Phone */
+                const phone = document.getElementById('phone');
+                const phoneMsg = document.getElementById('phoneMsg');
+                if (!phone.value.trim()) {
+                    setError(phone, phoneMsg, 'Mobile number is required.'); valid = false;
+                } else if (!/^\+?[\d\s]{10,13}$/.test(phone.value.trim())) {
+                    setError(phone, phoneMsg, 'Enter a valid 10-digit mobile number.'); valid = false;
+                } else {
+                    setOk(phone, phoneMsg);
+                }
+            }
+
+            if (step === 2) {
+                valid = validateRequired('enrollNo', 'enrollNoMsg', 'Enrollment number is required.') && valid;
+                valid = validateRequired('admYear', 'admYearMsg', 'Please select admission year.') && valid;
+                valid = validateRequired('course', 'courseMsg', 'Please select your course.') && valid;
+                valid = validateRequired('semester', 'semesterMsg', 'Please select your semester.') && valid;
+            }
+
+            return valid;
+        }
+
+        function validateRequired(id, msgId, msg) {
+            const el = document.getElementById(id);
+            const msgEl = document.getElementById(msgId);
+            if (!el.value.trim()) {
+                setError(el, msgEl, msg);
+                return false;
+            }
+            setOk(el, msgEl);
+            return true;
+        }
+
+        function setError(el, msgEl, msg) {
+            el.classList.remove('input-ok');
+            el.classList.add('input-error');
+            msgEl.textContent = msg;
+            msgEl.className = 'field-msg error';
+        }
+
+        function setOk(el, msgEl) {
+            el.classList.remove('input-error');
+            el.classList.add('input-ok');
+            msgEl.className = 'field-msg';
+            msgEl.textContent = '';
+        }
+
+        /* --- Password visibility toggle --- */
+        function togglePw(inputId, btn) {
+            const inp = document.getElementById(inputId);
+            const hidden = inp.type === 'password';
+            inp.type = hidden ? 'text' : 'password';
+            btn.querySelector('i').className = hidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        }
+
+        /* --- Password strength --- */
+        function checkStrength(val) {
+            const segs = ['seg1', 'seg2', 'seg3', 'seg4'];
+            const label = document.getElementById('strengthLabel');
+            const colors = ['#f87171', '#fb923c', '#facc15', '#34d399'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            segs.forEach((id, i) => {
+                document.getElementById(id).style.background = i < score ? colors[score - 1] : 'rgba(255,255,255,0.1)';
+            });
+
+            label.textContent = val.length === 0 ? 'Password strength will appear here'
+                : `Strength: ${labels[score - 1] || 'Very Weak'}`;
+            label.style.color = val.length === 0 ? 'var(--text-muted)' : colors[score - 1] || '#f87171';
+        }
+
+        /* --- Photo preview --- */
+        function previewPhoto(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('photoImg').src = e.target.result;
+                document.getElementById('photoImg').style.display = 'block';
+                document.getElementById('photoIcon').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* --- Form submit (step 3) --- */
+        document.getElementById('regForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            /* Validate step 3 */
+            let valid = true;
+            const email = document.getElementById('email');
+            const emailMsg = document.getElementById('emailMsg');
+            const pass = document.getElementById('password');
+            const passMsg = document.getElementById('passwordMsg');
+            const confirm = document.getElementById('confirmPass');
+            const confirmMsg = document.getElementById('confirmPassMsg');
+            const terms = document.getElementById('terms');
+            const termsMsg = document.getElementById('termsMsg');
+
+            /* Email */
+            if (!email.value.trim()) {
+                setError(email, emailMsg, 'Email address is required.'); valid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                setError(email, emailMsg, 'Enter a valid email address.'); valid = false;
+            } else { setOk(email, emailMsg); }
+
+            /* Password */
+            if (!pass.value) {
+                setError(pass, passMsg, 'Please create a password.'); valid = false;
+            } else if (pass.value.length < 8) {
+                setError(pass, passMsg, 'Password must be at least 8 characters.'); valid = false;
+            } else { setOk(pass, passMsg); }
+
+            /* Confirm */
+            if (!confirm.value) {
+                setError(confirm, confirmMsg, 'Please confirm your password.'); valid = false;
+            } else if (confirm.value !== pass.value) {
+                setError(confirm, confirmMsg, 'Passwords do not match.'); valid = false;
+            } else { setOk(confirm, confirmMsg); }
+
+            /* Terms */
+            if (!terms.checked) {
+                termsMsg.textContent = 'You must accept the terms to proceed.';
+                termsMsg.className = 'field-msg error';
+                valid = false;
+            } else {
+                termsMsg.className = 'field-msg';
+            }
+
+            if (!valid) return;
+
+            /* Simulate API call */
+            const btn = this.querySelector('.btn-submit');
+            btn.innerHTML = '<span>Creating account…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                /* Show success screen */
+                document.getElementById('regForm').style.display = 'none';
+                document.querySelector('.card-header').style.display = 'none';
+                document.getElementById('stepper').style.display = 'none';
+                document.querySelector('.step-pill') && (document.querySelector('.step-pill').style.display = 'none');
+                const ss = document.getElementById('successScreen');
+                ss.style.display = 'flex';
+            }, 1800);
+        });
+    </script>
+
+</body>
+
+</html>

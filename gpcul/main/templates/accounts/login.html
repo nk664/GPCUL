@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – GPCUL Library System</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ============================================================
+       DESIGN TOKENS — same as homepage
+    ============================================================ */
+        :root {
+            --navy: #0a1628;
+            --navy-mid: #112240;
+            --blue: #1a4fba;
+            --blue-mid: #2563eb;
+            --accent: #f0a500;
+            --gold: #f5c842;
+            --white: #ffffff;
+            --text-muted: #8892b0;
+            --card-bg: #162032;
+            --border: rgba(255, 255, 255, 0.08);
+            --error: #f87171;
+            --success: #34d399;
+
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'DM Sans', sans-serif;
+
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================================
+       RESET & BASE
+    ============================================================ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--navy);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ============================================================
+       BACKGROUND LAYERS
+    ============================================================ */
+        .page-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                linear-gradient(135deg, rgba(10, 22, 40, 0.98) 0%, rgba(17, 34, 64, 0.92) 60%, rgba(26, 79, 186, 0.18) 100%),
+                url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1600&q=80') center/cover no-repeat;
+        }
+
+        /* Grid texture */
+        .page-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .blob-1 {
+            width: 550px;
+            height: 550px;
+            background: var(--blue-mid);
+            top: -120px;
+            right: -120px;
+        }
+
+        .blob-2 {
+            width: 380px;
+            height: 380px;
+            background: var(--accent);
+            bottom: -80px;
+            left: -80px;
+        }
+
+        /* ============================================================
+       NAVBAR (minimal)
+    ============================================================ */
+        .navbar {
+            position: relative;
+            z-index: 10;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-badge {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--blue), var(--accent));
+            border-radius: var(--radius-sm);
+            display: grid;
+            place-items: center;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--white);
+        }
+
+        .logo-text strong {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            line-height: 1.1;
+        }
+
+        .logo-text span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color var(--transition);
+        }
+
+        .nav-back:hover {
+            color: var(--white);
+        }
+
+        /* ============================================================
+       MAIN LAYOUT — split panel
+    ============================================================ */
+        .auth-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-shell {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: min(980px, 100%);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+
+            /* Entry animation */
+            animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+       LEFT PANEL — decorative info side
+    ============================================================ */
+        .auth-panel {
+            background:
+                linear-gradient(160deg, rgba(26, 79, 186, 0.6) 0%, rgba(10, 22, 40, 0.95) 70%),
+                url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&q=80') center/cover no-repeat;
+            padding: 3.5rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative circle */
+        .panel-circle {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 60px solid rgba(255, 255, 255, 0.04);
+            bottom: -80px;
+            right: -80px;
+            pointer-events: none;
+        }
+
+
+
+        .panel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(240, 165, 0, 0.15);
+            border: 1px solid rgba(240, 165, 0, 0.3);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            padding: 0.35rem 0.9rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            margin-bottom: 1.75rem;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            line-height: 1.2;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .panel-title .accent {
+            color: var(--accent);
+        }
+
+        .panel-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.85;
+            max-width: 300px;
+        }
+
+        /* Feature list */
+        .panel-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            margin-top: 2.5rem;
+        }
+
+        .panel-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .pf-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: var(--accent);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .panel-bottom {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ============================================================
+       RIGHT PANEL — form side
+    ============================================================ */
+        .auth-form-side {
+            padding: 3.5rem 2.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Form header */
+        .form-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .form-header .eyebrow {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header h1 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--white);
+            line-height: 1.15;
+        }
+
+        .form-header p {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .form-header p a {
+            color: var(--accent);
+            font-weight: 600;
+            transition: color var(--transition);
+        }
+
+        .form-header p a:hover {
+            color: var(--gold);
+        }
+
+        /* Role selector tabs */
+        .role-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.3rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .role-tab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            font-family: var(--font-body);
+        }
+
+        .role-tab.active {
+            background: var(--blue-mid);
+            color: var(--white);
+            box-shadow: 0 2px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .role-tab:not(.active):hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Form fields */
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.03em;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+            transition: color var(--transition);
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1rem 0.8rem 2.75rem;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--white);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-input:focus {
+            border-color: var(--blue-mid);
+            background: rgba(37, 99, 235, 0.08);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .form-input:focus+.input-icon,
+        .input-wrap:focus-within .input-icon {
+            color: var(--blue-mid);
+        }
+
+        /* Password toggle */
+        .pw-toggle {
+            position: absolute;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+            padding: 0;
+        }
+
+        .pw-toggle:hover {
+            color: var(--white);
+        }
+
+        /* Input validation states */
+        .form-input.input-error {
+            border-color: var(--error);
+        }
+
+        .form-input.input-ok {
+            border-color: var(--success);
+        }
+
+        .field-msg {
+            font-size: 0.75rem;
+            margin-top: 0.35rem;
+            display: none;
+        }
+
+        .field-msg.error {
+            color: var(--error);
+            display: block;
+        }
+
+        .field-msg.ok {
+            color: var(--success);
+            display: block;
+        }
+
+        /* Options row */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--blue-mid);
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            font-size: 0.82rem;
+            color: var(--accent);
+            font-weight: 600;
+            transition: color var(--transition);
+        }
+
+        .forgot-link:hover {
+            color: var(--gold);
+        }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .btn-submit:hover::before {
+            opacity: 1;
+        }
+
+        .btn-submit:hover {
+            color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(240, 165, 0, 0.3);
+        }
+
+        .btn-submit span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-submit i {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Social login */
+        .social-logins {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.7rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: var(--transition);
+        }
+
+        .btn-social:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        /* Error alert */
+        .alert {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .alert.alert-error {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: var(--error);
+            display: flex;
+        }
+
+        .alert.alert-success {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: var(--success);
+            display: flex;
+        }
+
+        /* ============================================================
+       FOOTER
+    ============================================================ */
+        .auth-footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 1.25rem;
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+        @media (max-width: 720px) {
+            .auth-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-panel {
+                display: none;
+            }
+
+            .auth-form-side {
+                padding: 2.5rem 1.75rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .auth-form-side {
+                padding: 2rem 1.25rem;
+            }
+
+            .social-logins {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background layers -->
+    <div class="page-bg"></div>
+    <div class="page-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- ============================================================
+       MINIMAL NAVBAR
+  ============================================================ -->
+    <nav class="navbar">
+        <a href="{% url 'home'%}" class="nav-logo">
+            <div class="logo-badge">G</div>
+            <div class="logo-text">
+                <strong>GPCUL</strong>
+                <span>Library System</span>
+            </div>
+        </a>
+        <a href="{% url 'home'%}" class="nav-back">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+    </nav>
+
+    <!-- ============================================================
+       AUTH WRAPPER
+  ============================================================ -->
+    <main class="auth-wrapper">
+        <div class="auth-shell">
+
+            <!-- ── LEFT PANEL ── -->
+            <div class="auth-panel">
+                <div class="panel-circle"></div>
+
+                <div class="panel-top">
+                    <div class="panel-badge">
+                        <i class="fa-solid fa-building-columns"></i>
+                        Govt. Polytechnic College
+                    </div>
+                    <h2 class="panel-title">
+                        Your <span class="accent">Digital</span><br />
+                        Library Awaits
+                    </h2>
+                    <p class="panel-desc">
+                        Sign in to access your library account, track borrowed books, renew memberships, and explore
+                        thousands of resources.
+                    </p>
+
+                    <div class="panel-features">
+                        <div class="panel-feature">
+                            <div class="pf-icon"><i class="fa-solid fa-book-open"></i></div>
+                            <span>Access 5,000+ books and resources</span>
+                        </div>
+                        <div class="panel-feature">
+                            <div class="pf-icon"><i class="fa-solid fa-id-card"></i></div>
+                            <span>View your library card & QR code</span>
+                        </div>
+                        <div class="panel-feature">
+                            <div class="pf-icon"><i class="fa-solid fa-bell"></i></div>
+                            <span>Get due-date reminders instantly</span>
+                        </div>
+                        <div class="panel-feature">
+                            <div class="pf-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            <span>Search and reserve books online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-bottom">
+                    © 2025 Govt. Polytechnic College Udhampur. All rights reserved.
+                </div>
+            </div>
+
+            <!-- ── RIGHT PANEL (FORM) ── -->
+            <div class="auth-form-side">
+
+                <!-- Form Header -->
+                <div class="form-header">
+                    <p class="eyebrow">Welcome Back</p>
+                    <h1>Sign in to GPCUL</h1>
+                    <p>Don't have an account? <a href="{% url 'register'%}">Register here</a></p>
+                </div>
+
+                <!-- Role Selector -->
+                <div class="role-tabs" role="tablist" aria-label="Login as">
+                    <button class="role-tab active" onclick="setRole(this)" type="button">
+                        <i class="fa-solid fa-user-graduate"></i> Student
+                    </button>
+                    <button class="role-tab" onclick="setRole(this)" type="button">
+                        <i class="fa-solid fa-shield-halved"></i> Admin / Staff
+                    </button>
+                </div>
+
+                <!-- Alert Box (shown on error) -->
+                <div class="alert" id="loginAlert">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="alertMsg">Invalid credentials. Please try again.</span>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" novalidate>
+
+                    <!-- Enrollment / Email -->
+                    <div class="form-group">
+                        <label class="form-label" for="loginId">Enrollment No. / Email</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="loginId" class="form-input" placeholder="e.g. 2023GPCUDH001 or email"
+                                autocomplete="username" />
+                        </div>
+                        <p class="field-msg" id="loginIdMsg"></p>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label" for="loginPass">Password</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="loginPass" class="form-input" placeholder="Enter your password"
+                                autocomplete="current-password" />
+                            <button type="button" class="pw-toggle" onclick="togglePw('loginPass', this)"
+                                aria-label="Show password">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <p class="field-msg" id="loginPassMsg"></p>
+                    </div>
+
+                    <!-- Options row -->
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="rememberMe" />
+                            Remember me
+                        </label>
+                        <a href="{% url 'forget'%}" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-submit">
+                        <span>Sign In</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                </form>
+
+                <!-- Divider -->
+                <div class="divider"><span>or continue with</span></div>
+
+                <!-- Social logins -->
+                <div class="social-logins">
+                    <button class="btn-social" type="button">
+                        <i class="fa-brands fa-google"></i> Google
+                    </button>
+                    <button class="btn-social" type="button">
+                        <i class="fa-brands fa-microsoft"></i> Microsoft
+                    </button>
+                </div>
+
+            </div><!-- /auth-form-side -->
+        </div><!-- /auth-shell -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="auth-footer">
+        Govt. Polytechnic College Udhampur &mdash; Library Management System &mdash; J&K, India
+    </footer>
+
+    <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+    <script>
+        /* --- Role tab switcher --- */
+        function setRole(tab) {
+            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const isAdmin = tab.textContent.trim().startsWith('Admin');
+            document.getElementById('loginId').placeholder = isAdmin
+                ? 'Staff ID or admin email'
+                : 'e.g. 2023GPCUDH001 or email';
+        }
+
+        /* --- Password visibility toggle --- */
+        function togglePw(inputId, btn) {
+            const inp = document.getElementById(inputId);
+            const isHidden = inp.type === 'password';
+            inp.type = isHidden ? 'text' : 'password';
+            btn.querySelector('i').className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        }
+
+        /* --- Form validation & submit --- */
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const id = document.getElementById('loginId');
+            const pass = document.getElementById('loginPass');
+            const idMsg = document.getElementById('loginIdMsg');
+            const passMsg = document.getElementById('loginPassMsg');
+            const alert = document.getElementById('loginAlert');
+            let valid = true;
+
+            /* Reset */
+            [id, pass].forEach(el => el.classList.remove('input-error', 'input-ok'));
+            [idMsg, passMsg].forEach(el => { el.className = 'field-msg'; el.textContent = ''; });
+            alert.className = 'alert';
+
+            /* Validate ID */
+            if (!id.value.trim()) {
+                id.classList.add('input-error');
+                idMsg.textContent = 'This field is required.';
+                idMsg.className = 'field-msg error';
+                valid = false;
+            } else {
+                id.classList.add('input-ok');
+            }
+
+            /* Validate Password */
+            if (!pass.value) {
+                pass.classList.add('input-error');
+                passMsg.textContent = 'Please enter your password.';
+                passMsg.className = 'field-msg error';
+                valid = false;
+            } else if (pass.value.length < 6) {
+                pass.classList.add('input-error');
+                passMsg.textContent = 'Password must be at least 6 characters.';
+                passMsg.className = 'field-msg error';
+                valid = false;
+            } else {
+                pass.classList.add('input-ok');
+            }
+
+            if (!valid) return;
+
+            /* Simulate login (replace with real API call) */
+            const btn = this.querySelector('.btn-submit');
+            btn.innerHTML = '<span>Signing in…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                /* Demo: show error for wrong creds, success otherwise */
+                const demoFail = pass.value === 'wrong';
+                if (demoFail) {
+                    alert.className = 'alert alert-error';
+                    document.getElementById('alertMsg').textContent = 'Invalid credentials. Please check and try again.';
+                    btn.innerHTML = '<span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>';
+                    btn.disabled = false;
+                } else {
+                    alert.className = 'alert alert-success';
+                    alert.querySelector('i').className = 'fa-solid fa-circle-check';
+                    document.getElementById('alertMsg').textContent = 'Login successful! Redirecting…';
+                    btn.innerHTML = '<span>Success!</span> <i class="fa-solid fa-check"></i>';
+                }
+            }, 1500);
+        });
+    </script>
+
+</body>
+
+</html>
