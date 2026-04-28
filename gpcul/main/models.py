@@ -3,8 +3,8 @@ from django.db import models
 
 # Create your models here.
 
-class Student(models.model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class Student(models.Model):
+    User = models.OneToOneField(User, on_delete=models.CASCADE)
     
 
 
@@ -32,6 +32,3 @@ class Student(models.model):
 
     #login setup 
     
-
-    first_name = models.CharField(max_length=50)
-    first_name = models.CharField(max_length=50)

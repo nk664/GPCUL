@@ -893,7 +893,9 @@
                 </div>
 
                 <!-- FORM -->
-                <form id="regForm" novalidate>
+                <form id="regForm" method="POST" enctype="multipart/form-data" novalidate>
+
+                    {% csrf_token %}
 
                     <!-- ========== STEP 1: PERSONAL INFO ========== -->
                     <div class="step-panel active" id="panel-1">
@@ -905,7 +907,7 @@
                                 <div class="photo-preview" id="photoPreview"
                                     onclick="document.getElementById('photoInput').click()">
                                     <i class="fa-regular fa-user" id="photoIcon"></i>
-                                    <img id="photoImg" src="" alt="Preview" />
+                                    <img id="photoImg" name = "photo" src="" alt="Preview" />
                                 </div>
                                 <div class="photo-info">
                                     <button type="button" class="btn-upload"
@@ -928,7 +930,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-user input-icon"></i>
-                                    <input type="text" id="firstName" class="form-input" placeholder="e.g. Rahul" />
+                                    <input type="text" name = "first_name" id="firstName" class="form-input" placeholder="e.g. Rahul" />
                                 </div>
                                 <p class="field-msg" id="firstNameMsg"></p>
                             </div>
@@ -939,7 +941,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-user input-icon"></i>
-                                    <input type="text" id="lastName" class="form-input" placeholder="e.g. Sharma" />
+                                    <input type="text" name = "last_name" id="lastName" class="form-input" placeholder="e.g. Sharma" />
                                 </div>
                                 <p class="field-msg" id="lastNameMsg"></p>
                             </div>
@@ -952,7 +954,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-calendar input-icon"></i>
-                                    <input type="date" id="dob" class="form-input" />
+                                    <input type="date" name = "dob" id="dob" class="form-input" />
                                 </div>
                                 <p class="field-msg" id="dobMsg"></p>
                             </div>
@@ -963,7 +965,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-venus-mars input-icon"></i>
-                                    <select id="gender" class="form-input form-select">
+                                    <select id="gender" name = "gender" class="form-input form-select">
                                         <option value="">Select gender</option>
                                         <option>Male</option>
                                         <option>Female</option>
@@ -982,7 +984,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-phone input-icon"></i>
-                                    <input type="tel" id="phone" class="form-input" placeholder="+91 XXXXX XXXXX"
+                                    <input type="tel" name = "mobile" id="phone" class="form-input" placeholder="+91 XXXXX XXXXX"
                                         maxlength="13" />
                                 </div>
                                 <p class="field-msg" id="phoneMsg"></p>
@@ -1009,7 +1011,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-hashtag input-icon"></i>
-                                    <input type="text" id="enrollNo" class="form-input"
+                                    <input type="text" name = "enrollment" id="enrollNo" class="form-input"
                                         placeholder="e.g. 2023GPCUDH001" />
                                 </div>
                                 <p class="field-msg" id="enrollNoMsg"></p>
@@ -1021,7 +1023,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-calendar-days input-icon"></i>
-                                    <select id="admYear" class="form-input form-select">
+                                    <select id="admYear" name = "admission_year" class="form-input form-select">
                                         <option value="">Select year</option>
                                         <option>2025</option>
                                         <option>2024</option>
@@ -1041,14 +1043,12 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-graduation-cap input-icon"></i>
-                                    <select id="course" class="form-input form-select">
+                                    <select id="course" name = "course" class="form-input form-select">
                                         <option value="">Select course</option>
                                         <option>Civil Engineering</option>
                                         <option>Computer Engineering</option>
-                                        <option>Electrical Engineering</option>
-                                        <option>Mechanical Engineering</option>
-                                        <option>Electronics Engineering</option>
-                                        <option>Information Technology</option>
+                                        <option>Automobile Engineering</option>
+                                        
                                     </select>
                                 </div>
                                 <p class="field-msg" id="courseMsg"></p>
@@ -1060,7 +1060,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-layer-group input-icon"></i>
-                                    <select id="semester" class="form-input form-select">
+                                    <select id="semester" name = "semester" class="form-input form-select">
                                         <option value="">Select semester</option>
                                         <option>1st Semester</option>
                                         <option>2nd Semester</option>
@@ -1079,7 +1079,7 @@
                                 <label class="form-label" for="address">Address</label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-location-dot input-icon"></i>
-                                    <input type="text" id="address" class="form-input"
+                                    <input type="text" name = "address" id="address" class="form-input"
                                         placeholder="Village / Town, District, J&K" />
                                 </div>
                             </div>
@@ -1108,7 +1108,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-envelope input-icon"></i>
-                                    <input type="email" id="email" class="form-input" placeholder="you@example.com"
+                                    <input type="email" name = "email" id="email" class="form-input" placeholder="you@example.com"
                                         autocomplete="email" />
                                 </div>
                                 <p class="field-msg" id="emailMsg"></p>
@@ -1122,7 +1122,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="password" class="form-input"
+                                    <input type="password" name ="password" id="password" class="form-input"
                                         placeholder="Min. 8 characters" oninput="checkStrength(this.value)"
                                         autocomplete="new-password" />
                                     <button type="button" class="pw-toggle" onclick="togglePw('password', this)">
@@ -1189,7 +1189,7 @@
                         Welcome to GPCUL! Your library account has been created. Your Library Card with QR Code will be
                         sent to your registered email.
                     </p>
-                    <button class="btn-goto-login" onclick="window.location.href='login.html'">
+                    <button class="btn-goto-login" onclick="window.location.href= login.html">
                         <i class="fa-solid fa-right-to-bracket"></i> Go to Login
                     </button>
                 </div>
