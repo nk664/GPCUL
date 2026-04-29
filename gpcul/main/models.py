@@ -4,7 +4,7 @@ from django.db import models
 # Create your models here.
 
 class Student(models.Model):
-    User = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     
 
 
