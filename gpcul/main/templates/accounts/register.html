@@ -893,7 +893,7 @@
                 </div>
 
                 <!-- FORM -->
-                <form id="regForm" method="POST" enctype="multipart/form-data" novalidate>
+                <form id="regForm" method="POST" action = "{% url 'std_register'%}" enctype="multipart/form-data" >
 
                     {% csrf_token %}
 
@@ -906,8 +906,7 @@
                             <div class="photo-upload">
                                 <div class="photo-preview" id="photoPreview"
                                     onclick="document.getElementById('photoInput').click()">
-                                    <i class="fa-regular fa-user" id="photoIcon"></i>
-                                    <img id="photoImg" name = "photo" src="" alt="Preview" />
+                                    <input type="file" name="photo" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)" />
                                 </div>
                                 <div class="photo-info">
                                     <button type="button" class="btn-upload"
@@ -1146,7 +1145,7 @@
                                 </label>
                                 <div class="input-wrap">
                                     <i class="fa-solid fa-shield-halved input-icon"></i>
-                                    <input type="password" id="confirmPass" class="form-input"
+                                    <input type="password" name="confirm_password" id="confirmPass" class="form-input"
                                         placeholder="Re-enter password" autocomplete="new-password" />
                                     <button type="button" class="pw-toggle" onclick="togglePw('confirmPass', this)">
                                         <i class="fa-regular fa-eye"></i>
@@ -1350,67 +1349,57 @@
         }
 
         /* --- Form submit (step 3) --- */
-        document.getElementById('regForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+    document.getElementById('regForm').addEventListener('submit', function (e) {
 
-            /* Validate step 3 */
-            let valid = true;
-            const email = document.getElementById('email');
-            const emailMsg = document.getElementById('emailMsg');
-            const pass = document.getElementById('password');
-            const passMsg = document.getElementById('passwordMsg');
-            const confirm = document.getElementById('confirmPass');
-            const confirmMsg = document.getElementById('confirmPassMsg');
-            const terms = document.getElementById('terms');
-            const termsMsg = document.getElementById('termsMsg');
+        let valid = true;
 
-            /* Email */
-            if (!email.value.trim()) {
-                setError(email, emailMsg, 'Email address is required.'); valid = false;
-            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-                setError(email, emailMsg, 'Enter a valid email address.'); valid = false;
-            } else { setOk(email, emailMsg); }
+        const email = document.getElementById('email');
+        const emailMsg = document.getElementById('emailMsg');
+        const pass = document.getElementById('password');
+        const passMsg = document.getElementById('passwordMsg');
+        const confirm = document.getElementById('confirmPass');
+        const confirmMsg = document.getElementById('confirmPassMsg');
+        const terms = document.getElementById('terms');
+        const termsMsg = document.getElementById('termsMsg');
 
-            /* Password */
-            if (!pass.value) {
-                setError(pass, passMsg, 'Please create a password.'); valid = false;
-            } else if (pass.value.length < 8) {
-                setError(pass, passMsg, 'Password must be at least 8 characters.'); valid = false;
-            } else { setOk(pass, passMsg); }
+        /* Email validation */
+        if (!email.value.trim()) {
+            setError(email, emailMsg, 'Email is required');
+            valid = false;
+        } else {
+            setOk(email, emailMsg);
+        }
 
-            /* Confirm */
-            if (!confirm.value) {
-                setError(confirm, confirmMsg, 'Please confirm your password.'); valid = false;
-            } else if (confirm.value !== pass.value) {
-                setError(confirm, confirmMsg, 'Passwords do not match.'); valid = false;
-            } else { setOk(confirm, confirmMsg); }
+        /* Password validation */
+        if (!pass.value || pass.value.length < 8) {
+            setError(pass, passMsg, 'Password must be at least 8 characters');
+            valid = false;
+        } else {
+            setOk(pass, passMsg);
+        }
 
-            /* Terms */
-            if (!terms.checked) {
-                termsMsg.textContent = 'You must accept the terms to proceed.';
-                termsMsg.className = 'field-msg error';
-                valid = false;
-            } else {
-                termsMsg.className = 'field-msg';
-            }
+        /* Confirm password */
+        if (confirm.value !== pass.value) {
+            setError(confirm, confirmMsg, 'Passwords do not match');
+            valid = false;
+        } else {
+            setOk(confirm, confirmMsg);
+        }
 
-            if (!valid) return;
+        /* Terms */
+        if (!terms.checked) {
+            termsMsg.textContent = 'Accept terms';
+            valid = false;
+        } else {
+            termsMsg.textContent = '';
+        }
 
-            /* Simulate API call */
-            const btn = this.querySelector('.btn-submit');
-            btn.innerHTML = '<span>Creating account…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                /* Show success screen */
-                document.getElementById('regForm').style.display = 'none';
-                document.querySelector('.card-header').style.display = 'none';
-                document.getElementById('stepper').style.display = 'none';
-                document.querySelector('.step-pill') && (document.querySelector('.step-pill').style.display = 'none');
-                const ss = document.getElementById('successScreen');
-                ss.style.display = 'flex';
-            }, 1800);
-        });
+        /* 🚨 IMPORTANT */
+        if (!valid) {
+            e.preventDefault();   // stop only if invalid
+            return;
+        }
+    });
     </script>
 
 </body>
