@@ -904,10 +904,12 @@
                         <div class="form-group">
                             <label class="form-label">Profile Photo</label>
                             <div class="photo-upload">
-                                <div class="photo-preview" id="photoPreview"
+<div class="photo-preview" id="photoPreview"
                                     onclick="document.getElementById('photoInput').click()">
-                                    <input type="file" name="photo" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)" />
+                                    <i class="fa-solid fa-camera" id="photoIcon" style="font-size: 1.5rem;"></i>
+                                    <img id="photoImg" src="" alt="Profile Photo" />
                                 </div>
+                                <input type="file" name="photo" id="photoInput" accept="image/*" style="display:none" onchange="previewPhoto(this)" />
                                 <div class="photo-info">
                                     <button type="button" class="btn-upload"
                                         onclick="document.getElementById('photoInput').click()">
@@ -916,9 +918,7 @@
                                     <p>JPG, PNG up to 2MB. Square recommended.</p>
                                 </div>
                             </div>
-                            <input type="file" id="photoInput" accept="image/*" style="display:none"
-                                onchange="previewPhoto(this)" />
-                        </div>
+</div>
 
                         <div class="form-section-label">Basic Information</div>
 
@@ -1188,9 +1188,9 @@
                         Welcome to GPCUL! Your library account has been created. Your Library Card with QR Code will be
                         sent to your registered email.
                     </p>
-                    <button class="btn-goto-login" onclick="window.location.href= login.html">
+<a href="{% url 'login' %}" class="btn-goto-login">
                         <i class="fa-solid fa-right-to-bracket"></i> Go to Login
-                    </button>
+                    </a>
                 </div>
 
             </div><!-- /reg-card -->

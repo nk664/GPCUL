@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-
+from datetime import datetime
 
 
 # Create your views here.
@@ -17,6 +17,7 @@ def register(request):
     return render(request, 'accounts/register.html')
 
 def login_page(request):
+    
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -27,7 +28,7 @@ def login_page(request):
             login(request, user)
             return redirect('std_dash')
         else:
-            messages.error(request, 'invalid email or password')
+            messages.error(request, 'Invalid email or password')
             return render(request, 'accounts/login.html')
             
     return render(request, 'accounts/login.html')
@@ -37,9 +38,35 @@ def forget(request):
 
 @login_required(login_url= 'login')
 def std_dash(request):
-    return render(request, 'dashboard/std_dash.html')
+    hour = datetime.now().hour
+    # Initialize greeting based on time of day
+    greeting = 'Hello'  # default
+    if hour < 12:
+        greeting = 'Good Morning ☀️'
+    elif hour < 18:
+        greeting = 'Good Afternoon 🌤️'
+    else: 
+        greeting = 'Good Evening 🌙'
 
+    # Get student data from Student model
+    try:
+        student = Student.objects.get(user=request.user)
+        enrollment = student.enrollment
+        course = student.course
+        semester = student.semester
+    except Student.DoesNotExist:
+        enrollment = ''
+        course = ''
+        semester = ''
 
+    context = {
+        'greeting': greeting,
+        'enrollment': enrollment,
+        'course': course,
+        'semester': semester,
+    }
+
+    return render(request, 'dashboard/std_dash.html', context)
 
 def std_register(request):
     
@@ -61,10 +88,10 @@ def std_register(request):
             user = User.objects.create_user(
                 username = email,
                 email = email,
-                password = password
-            )
-            user.set_password(password)
-            user.save()
+                password = password,
+                first_name = request.POST.get('first_name'),
+                last_name = request.POST.get('last_name'),            )
+            
             
         
 
@@ -116,4 +143,4 @@ def std_login(request):
 
 def user_logout(request):
     logout(request)
-    return HttpResponseRedirect('/')
+    return redirect('login')

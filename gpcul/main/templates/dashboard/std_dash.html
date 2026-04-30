@@ -1606,9 +1606,9 @@
                 RS
                 <div class="online-dot"></div>
             </div>
-            <div class="profile-info">
-                <div class="name">Rahul Sharma</div>
-                <div class="roll">2023GPCUDH047</div>
+<div class="profile-info">
+                <div class="name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                <div class="roll">{{ enrollment }}</div>
             </div>
         </div>
 
@@ -1684,11 +1684,11 @@
         </div>
 
         <!-- Logout -->
-        <div class="sidebar-footer">
-            <div class="nav-item" onclick="window.location.href='login.html'">
+<div class="sidebar-footer">
+            <a href="{% url 'logout' %}" class="nav-item">
                 <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Sign Out</span>
-            </div>
+                <span>Log Out</span>
+            </a>
         </div>
 
     </aside>
@@ -1730,7 +1730,7 @@
                 </div>
 
                 <!-- Topbar avatar -->
-                <div class="topbar-avatar" title="My Profile">RS</div>
+                <div class="topbar-avatar" title="My Profile"></div>
             </div>
         </header>
 
@@ -1740,8 +1740,8 @@
             <!-- WELCOME BANNER -->
             <div class="welcome-banner">
                 <div class="welcome-text">
-                    <p class="greeting">Good Morning ☀️</p>
-                    <h1>Welcome back, <span class="accent"> {{ request.user.username }} </span>!</h1>
+                    <p class="greeting"> {{greeting}} </p>
+                    <h1>Welcome back, <span class="accent"> {{ request.user.first_name }} {{ request.user.last_name}} </span>!</h1>
                     <p>You have <strong style="color:var(--warn);">3 books</strong> borrowed and <strong
                             style="color:var(--error);">1 overdue</strong>. Stay on track!</p>
                 </div>
@@ -1916,9 +1916,9 @@
                             <div class="lib-card-middle">
                                 <div class="lib-card-avatar">RS</div>
                                 <div>
-                                    <div class="lib-card-name">Rahul Sharma</div>
-                                    <div class="lib-card-enroll">2023GPCUDH047</div>
-                                    <div class="lib-card-course">Computer Engineering · 4th Sem</div>
+                                    <div class="lib-card-name">{{ request.user.first_name }} {{ request.user.last_name }} </div>
+<div class="lib-card-enroll">{{ enrollment|default:"N/A" }}</div>
+                                    <div class="lib-card-course">{{ course|default:"N/A" }} · {{ semester|default:"N/A" }}</div>
                                 </div>
                             </div>
                             <div class="lib-card-bottom">
