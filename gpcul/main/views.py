@@ -35,7 +35,7 @@ def login_page(request):
 def forget(request):
     return render(request, 'accounts/forget.html')
 
-@login_required
+@login_required(login_url= 'login')
 def std_dash(request):
     return render(request, 'dashboard/std_dash.html')
 
