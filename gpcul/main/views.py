@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .models import Student
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+
+
 
 # Create your views here.
 
@@ -11,28 +16,44 @@ def home(request):
 def register(request):
     return render(request, 'accounts/register.html')
 
-def login(request):
+def login_page(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username = email, password = password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('std_dash')
+        else:
+            messages.error(request, 'invalid email or password')
+            return render(request, 'accounts/login.html')
+            
     return render(request, 'accounts/login.html')
 
 def forget(request):
     return render(request, 'accounts/forget.html')
 
+@login_required
+def std_dash(request):
+    return render(request, 'dashboard/std_dash.html')
+
 
 
 def std_register(request):
-    print("=== std_register CALLED ===")
-    print(f"Method: {request.method}")
+    
     if request.method == "POST":
         print("POST data keys:", list(request.POST.keys()))
         print("FILES:", dict(request.FILES))
         
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print(f"Email: {email}, Password len: {len(password or '')}")
+        
         
 
         if User.objects.filter(username = email).exists():
-            print("Email exists, error message sent")
+            
             messages.error(request, "email already registered")
             return redirect('register')
         
@@ -42,7 +63,10 @@ def std_register(request):
                 email = email,
                 password = password
             )
-            print(f"User created: {user.username}")
+            user.set_password(password)
+            user.save()
+            
+        
 
             student_data = {
                 'user': user,
@@ -58,17 +82,38 @@ def std_register(request):
                 'address': request.POST.get('address'),
                 'photo': request.FILES.get('photo'),
             }
-            print("Student data:", {k: v[:20] + '...' if isinstance(v, str) and len(v)>20 else v for k,v in student_data.items()})
+
             
             student = Student.objects.create(**student_data)
-            print(f"Student created ID: {student.id}")
+            
             
             messages.success(request, "Registration successful!")
-            print("SUCCESS - redirecting to login")
+            
             return redirect('login')
         except Exception as e:
-            print(f"ERROR creating user/student: {e}")
+            
             messages.error(request, f"Registration failed: {str(e)}")
             return render(request, 'accounts/register.html')
-    print("GET request - rendering form")
+    
     return render(request, 'accounts/register.html')
+
+def std_login(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+#check user
+
+        user = authenticate(request, username = email, password = password)
+        
+
+        if user is not None:
+            login(request, user)
+            return redirect('std_dash')
+        else:
+            messages.error(request, 'invalid email or password')
+            
+    return render(request, 'accounts/login.html')
+
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/')

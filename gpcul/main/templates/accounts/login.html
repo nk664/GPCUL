@@ -802,14 +802,15 @@
                 </div>
 
                 <!-- LOGIN FORM -->
-                <form id="loginForm" novalidate>
+<form id="loginForm" method = "POST" action = "{% url 'login' %}" >
+                    {% csrf_token %}
 
                     <!-- Enrollment / Email -->
                     <div class="form-group">
                         <label class="form-label" for="loginId">Enrollment No. / Email</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-user input-icon"></i>
-                            <input type="text" id="loginId" class="form-input" placeholder="e.g. 2023GPCUDH001 or email"
+                            <input type="text" name = "email" id="loginId" class="form-input" placeholder="e.g. 2023GPCUDH001 or email"
                                 autocomplete="username" />
                         </div>
                         <p class="field-msg" id="loginIdMsg"></p>
@@ -820,7 +821,7 @@
                         <label class="form-label" for="loginPass">Password</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="loginPass" class="form-input" placeholder="Enter your password"
+                            <input type="password" name = 'password' id="loginPass" class="form-input" placeholder="Enter your password"
                                 autocomplete="current-password" />
                             <button type="button" class="pw-toggle" onclick="togglePw('loginPass', this)"
                                 aria-label="Show password">
@@ -841,8 +842,7 @@
 
                     <!-- Submit -->
                     <button type="submit" class="btn-submit">
-                        <span>Sign In</span>
-                        <i class="fa-solid fa-arrow-right"></i>
+                        Sign In
                     </button>
 
                 </form>
@@ -893,7 +893,7 @@
 
         /* --- Form validation & submit --- */
         document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+            
             const id = document.getElementById('loginId');
             const pass = document.getElementById('loginPass');
             const idMsg = document.getElementById('loginIdMsg');
@@ -927,32 +927,13 @@
                 passMsg.textContent = 'Password must be at least 6 characters.';
                 passMsg.className = 'field-msg error';
                 valid = false;
-            } else {
-                pass.classList.add('input-ok');
-            }
+            } 
 
-            if (!valid) return;
+            
+            if (!valid){
+                e.preventDefault();
+      }
 
-            /* Simulate login (replace with real API call) */
-            const btn = this.querySelector('.btn-submit');
-            btn.innerHTML = '<span>Signing in…</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                /* Demo: show error for wrong creds, success otherwise */
-                const demoFail = pass.value === 'wrong';
-                if (demoFail) {
-                    alert.className = 'alert alert-error';
-                    document.getElementById('alertMsg').textContent = 'Invalid credentials. Please check and try again.';
-                    btn.innerHTML = '<span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>';
-                    btn.disabled = false;
-                } else {
-                    alert.className = 'alert alert-success';
-                    alert.querySelector('i').className = 'fa-solid fa-circle-check';
-                    document.getElementById('alertMsg').textContent = 'Login successful! Redirecting…';
-                    btn.innerHTML = '<span>Success!</span> <i class="fa-solid fa-check"></i>';
-                }
-            }, 1500);
         });
     </script>
 

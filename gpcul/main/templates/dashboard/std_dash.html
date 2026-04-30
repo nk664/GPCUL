@@ -1741,7 +1741,7 @@
             <div class="welcome-banner">
                 <div class="welcome-text">
                     <p class="greeting">Good Morning ☀️</p>
-                    <h1>Welcome back, <span class="accent">Rahul</span>!</h1>
+                    <h1>Welcome back, <span class="accent"> {{ request.user.username }} </span>!</h1>
                     <p>You have <strong style="color:var(--warn);">3 books</strong> borrowed and <strong
                             style="color:var(--error);">1 overdue</strong>. Stay on track!</p>
                 </div>
