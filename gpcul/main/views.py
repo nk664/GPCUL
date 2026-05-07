@@ -89,11 +89,7 @@ def std_register(request):
                 username = email,
                 email = email,
                 password = password,
-                first_name = request.POST.get('first_name'),
-                last_name = request.POST.get('last_name'),            )
-            
-            
-        
+            )
 
             student_data = {
                 'user': user,
