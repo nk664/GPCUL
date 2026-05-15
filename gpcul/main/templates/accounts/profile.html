@@ -1,0 +1,2063 @@
+{% comment %}
+=================================================================
+  GPCUL – Student Profile Page
+  Django Template: templates/student/profile.html
+  
+  Context variables expected from Django view:
+  -------------------------------------------------
+  student         → Student model instance
+    .user.get_full_name()
+    .user.email
+    .enrollment_no
+    .course
+    .semester
+    .section
+    .phone
+    .address
+    .date_of_birth
+    .gender
+    .blood_group
+    .profile_photo.url (optional)
+    .library_card_no
+    .card_valid_until
+    .is_card_active
+    .membership_date
+    .department
+    
+  borrowed_books  → QuerySet of BorrowRecord
+    .book.title
+    .book.author
+    .book.isbn
+    .book.category
+    .issue_date
+    .due_date
+    .is_overdue
+    .days_overdue / days_remaining
+    .status  ('active'|'overdue'|'returned')
+    
+  borrow_history  → QuerySet of past BorrowRecord
+    .book.title
+    .book.author
+    .issue_date
+    .return_date
+    .fine_paid
+    
+  pending_fine    → Decimal  (total fine amount, 0 if none)
+  total_borrowed  → int
+  total_returned  → int
+  saved_books     → QuerySet of SavedBook
+  messages        → Django messages framework (success/error)
+  
+  URLs expected (add to urls.py):
+  -------------------------------------------------
+  {% url 'student:profile' %}
+  {% url 'student:edit_profile' %}
+  {% url 'student:change_password' %}
+  {% url 'student:download_card' %}
+  {% url 'student:renew_book' book_id %}
+  {% url 'student:pay_fine' %}
+=================================================================
+{% endcomment %}
+
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile – GPCUL Library System</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Django static file: {% static 'css/profile.css' %} (if using external CSS) -->
+  <!-- Here we embed styles for the single-file template -->
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      --bg:          #07111f;
+      --surface:     #0d1e33;
+      --surface-2:   #112440;
+      --surface-3:   #162b4a;
+      --blue:        #1a4fba;
+      --blue-mid:    #2563eb;
+      --blue-bright: #3b82f6;
+      --accent:      #f0a500;
+      --gold:        #f5c842;
+      --white:       #ffffff;
+      --text:        #b8c8e0;
+      --text-dim:    #6b7fa0;
+      --border:      rgba(255,255,255,0.06);
+      --border-mid:  rgba(255,255,255,0.11);
+      --success:     #22c55e;
+      --warn:        #f59e0b;
+      --danger:      #ef4444;
+      --purple:      #8b5cf6;
+      --teal:        #0d9488;
+      --teal-light:  #2dd4bf;
+
+      --sidebar-w:   260px;
+      --topbar-h:    64px;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+      --radius-xs:   6px;
+      --radius-sm:   10px;
+      --radius-md:   16px;
+      --radius-lg:   22px;
+      --transition:  0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ============================================================
+       RESET
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    button { font-family: var(--font-body); cursor: pointer; border: none; outline: none; }
+    input, select, textarea { font-family: var(--font-body); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius:4px; }
+
+    /* ============================================================
+       SIDEBAR
+    ============================================================ */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top:0; left:0; bottom:0;
+      z-index: 200;
+      overflow-y: auto;
+      transition: transform var(--transition);
+    }
+
+    .sidebar-logo {
+      height: var(--topbar-h);
+      display: flex;
+      align-items: center;
+      padding: 0 1.4rem;
+      gap: 0.8rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo-badge {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      border-radius: var(--radius-xs);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: var(--white);
+    }
+
+    .logo-text span { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.05em; }
+
+    /* Sidebar student mini-card */
+    .sidebar-student {
+      padding: 1.25rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .s-avatar-wrap { position: relative; flex-shrink: 0; }
+
+    .s-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-mid), var(--purple));
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    .s-avatar img { width:100%; height:100%; object-fit: cover; }
+
+    .online-dot {
+      position: absolute;
+      bottom: 1px; right: 1px;
+      width: 10px; height: 10px;
+      background: var(--success);
+      border-radius: 50%;
+      border: 2px solid var(--surface);
+    }
+
+    .s-info .s-name { font-size: 0.85rem; font-weight: 600; color: var(--white); }
+    .s-info .s-roll { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
+
+    /* Nav */
+    .sidebar-nav { flex:1; padding: 1rem 0.75rem; display:flex; flex-direction:column; gap: 2px; }
+
+    .nav-section-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0.6rem 0.6rem 0.3rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-item i { width: 18px; text-align: center; font-size: 0.85rem; flex-shrink:0; }
+
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+
+    .nav-item.active {
+      background: rgba(37,99,235,0.13);
+      color: var(--white);
+    }
+
+    .nav-item.active i { color: var(--blue-bright); }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 22%; bottom: 22%;
+      width: 3px;
+      background: var(--blue-mid);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.1rem 0.42rem;
+      border-radius: 50px;
+    }
+
+    .nb-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+    .nb-warn   { background: rgba(245,158,11,0.2); color: var(--warn); }
+
+    .sidebar-footer {
+      padding: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ============================================================
+       MAIN
+    ============================================================ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       TOPBAR
+    ============================================================ */
+    .topbar {
+      height: var(--topbar-h);
+      background: rgba(7,17,31,0.85);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .breadcrumb .current { color: var(--white); font-weight: 600; }
+
+    .topbar-right { display: flex; align-items: center; gap: 0.85rem; }
+
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .icon-btn:hover { border-color: var(--border-mid); color: var(--white); }
+
+    .icon-btn .notif-dot {
+      position: absolute;
+      top: 5px; right: 5px;
+      width: 7px; height: 7px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+    }
+
+    /* Django messages → displayed as banner */
+    .django-messages {
+      padding: 0.75rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .dj-message {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 500;
+      animation: slideIn 0.4s ease both;
+    }
+
+    .dj-message.success { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.25);  color: var(--success); }
+    .dj-message.error   { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: var(--danger); }
+    .dj-message.warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: var(--warn); }
+    .dj-message.info    { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: var(--blue-bright); }
+
+    @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ============================================================
+       CONTENT
+    ============================================================ */
+    .content { padding: 2rem; flex:1; }
+
+    /* ============================================================
+       PROFILE HERO SECTION
+    ============================================================ */
+    .profile-hero {
+      background: linear-gradient(135deg, #0f2347 0%, #1a3a6b 40%, #0d1e33 100%);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 2.5rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    /* Grid texture overlay */
+    .profile-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Decorative blob */
+    .profile-hero::after {
+      content: '';
+      position: absolute;
+      right: -80px; top: -80px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(37,99,235,0.1), transparent 70%);
+      border-radius: 50%;
+    }
+
+    /* Avatar */
+    .profile-avatar-wrap { position: relative; flex-shrink: 0; z-index: 1; }
+
+    .profile-avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-mid), var(--purple));
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: var(--white);
+      border: 4px solid rgba(255,255,255,0.12);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-avatar:hover { border-color: var(--accent); }
+
+    /* Upload overlay */
+    .avatar-upload-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transition: opacity var(--transition);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--white);
+    }
+
+    .profile-avatar-wrap:hover .avatar-upload-overlay { opacity: 1; }
+
+    /* Card status badge on avatar */
+    .card-status-pill {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.18rem 0.5rem;
+      border-radius: 50px;
+      border: 2px solid var(--surface);
+    }
+
+    .csp-active { background: var(--success); color: var(--bg); }
+    .csp-inactive { background: var(--danger); color: var(--white); }
+
+    /* Profile text */
+    .profile-info { flex: 1; z-index: 1; }
+
+    .profile-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 0.35rem;
+    }
+
+    .profile-course {
+      font-size: 0.88rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .profile-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .profile-meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 50px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .profile-meta-chip i { font-size: 0.7rem; color: var(--text-dim); }
+
+    /* Hero actions */
+    .profile-actions { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.65rem 1.35rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid;
+    }
+
+    .btn-primary {
+      background: var(--blue-mid);
+      border-color: transparent;
+      color: var(--white);
+    }
+
+    .btn-primary:hover { background: var(--blue); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.35); }
+
+    .btn-outline {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+    .btn-danger-outline {
+      background: rgba(239,68,68,0.08);
+      border-color: rgba(239,68,68,0.25);
+      color: var(--danger);
+    }
+
+    .btn-danger-outline:hover { background: rgba(239,68,68,0.18); }
+
+    /* Hero stats strip */
+    .profile-stats {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pstat {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-xs);
+      padding: 0.6rem 1rem;
+      text-align: center;
+    }
+
+    .pstat-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .pstat-label { font-size: 0.63rem; color: var(--text-dim); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* Library card on hero right */
+    .hero-card-wrap { z-index: 1; }
+
+    .mini-lib-card {
+      width: 220px;
+      background: linear-gradient(135deg, #1a3a6b, #0f2044);
+      border: 1px solid rgba(37,99,235,0.3);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mini-lib-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .mlc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; position: relative; z-index:1; }
+
+    .mlc-logo {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.4;
+    }
+
+    .mlc-logo strong { display: block; font-size: 0.85rem; color: var(--white); }
+
+    .mlc-chip {
+      width: 30px; height: 22px;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      border-radius: 4px;
+      opacity: 0.85;
+    }
+
+    .mlc-mid { position: relative; z-index:1; margin-bottom: 1rem; }
+
+    .mlc-name { font-family: var(--font-display); font-size: 0.9rem; color: var(--white); font-weight: 700; }
+    .mlc-enroll { font-size: 0.62rem; color: rgba(255,255,255,0.5); margin-top: 2px; letter-spacing: 0.04em; }
+    .mlc-course { font-size: 0.65rem; color: var(--accent); margin-top: 2px; }
+
+    .mlc-bottom { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index:1; }
+
+    .mlc-valid { font-size: 0.6rem; color: rgba(255,255,255,0.35); }
+    .mlc-valid span { color: rgba(255,255,255,0.65); font-weight: 600; }
+
+    .mlc-qr {
+      width: 40px; height: 40px;
+      background: var(--white);
+      border-radius: 3px;
+      padding: 3px;
+    }
+
+    .mlc-qr-inner {
+      width: 100%; height: 100%;
+      background: repeating-conic-gradient(var(--bg) 0% 25%, transparent 0% 50%) 0 0 / 6px 6px;
+    }
+
+    /* ============================================================
+       TAB NAVIGATION
+    ============================================================ */
+    .tab-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.35rem;
+      margin-bottom: 1.75rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1.15rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      background: transparent;
+      border: none;
+    }
+
+    .tab-btn i { font-size: 0.8rem; }
+
+    .tab-btn:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+
+    .tab-btn.active {
+      background: var(--blue-mid);
+      color: var(--white);
+      box-shadow: 0 2px 12px rgba(37,99,235,0.4);
+    }
+
+    /* Tab panels */
+    .tab-panel { display: none; animation: fadeUp 0.35s ease both; }
+    .tab-panel.active { display: block; }
+
+    /* ============================================================
+       SECTION CARD
+    ============================================================ */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .card-title i { color: var(--accent); font-size: 0.82rem; }
+
+    .card-action {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--blue-bright);
+      cursor: pointer;
+      transition: color var(--transition);
+    }
+
+    .card-action:hover { color: var(--accent); }
+
+    /* ============================================================
+       INFO GRID (personal details)
+    ============================================================ */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .info-item {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    .info-item:hover { background: rgba(255,255,255,0.015); }
+
+    .info-item:nth-child(3n) { border-right: none; }
+    .info-item:nth-last-child(-n+3) { border-bottom: none; }
+
+    .info-label {
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+
+    .info-value {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .info-value.muted { color: var(--text-dim); font-style: italic; }
+
+    /* ============================================================
+       EDIT PROFILE FORM  (Django form integration)
+    ============================================================ */
+    .edit-form {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .form-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .form-label .req { color: var(--danger); }
+
+    /* Django form field rendering:
+       {{ form.field_name }} renders as <input> — apply .form-input class via
+       widget attrs: widget=forms.TextInput(attrs={'class': 'form-input'})  */
+    .form-input, .form-select, .form-textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      padding: 0.72rem 1rem;
+      font-size: 0.85rem;
+      color: var(--white);
+      outline: none;
+      transition: var(--transition);
+      width: 100%;
+      appearance: none;
+    }
+
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--blue-mid);
+      background: rgba(37,99,235,0.07);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    /* Django error messages on fields */
+    .form-input.errorfield { border-color: var(--danger); }
+    .field-errors { font-size: 0.72rem; color: var(--danger); margin-top: 0.25rem; }
+
+    .form-select { cursor: pointer; }
+    .form-select option { background: var(--surface-2); }
+
+    .form-textarea { resize: vertical; min-height: 90px; }
+
+    /* CSRF note: always include {% csrf_token %} in Django forms */
+    .form-actions {
+      display: flex;
+      gap: 0.85rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ============================================================
+       BORROWED BOOKS TABLE
+    ============================================================ */
+    .books-table { width:100%; border-collapse: collapse; }
+
+    .books-table thead tr { border-bottom: 1px solid var(--border); }
+
+    .books-table th {
+      padding: 0.65rem 1.35rem;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .books-table td {
+      padding: 0.9rem 1.35rem;
+      font-size: 0.83rem;
+      color: var(--text);
+      border-bottom: 1px solid rgba(255,255,255,0.035);
+      vertical-align: middle;
+    }
+
+    .books-table tbody tr { transition: background var(--transition); }
+    .books-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .books-table tbody tr:last-child td { border-bottom: none; }
+
+    .book-cell { display: flex; align-items: center; gap: 0.75rem; }
+    .book-emoji { font-size: 1.3rem; flex-shrink:0; }
+    .book-title-text { font-size: 0.85rem; font-weight: 600; color: var(--white); line-height: 1.3; }
+    .book-sub-text   { font-size: 0.7rem; color: var(--text-dim); margin-top: 1px; }
+
+    /* Status badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      padding: 0.22rem 0.65rem;
+      border-radius: 50px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .b-ok     { background: rgba(34,197,94,0.1);  color: var(--success); }
+    .b-warn   { background: rgba(245,158,11,0.1); color: var(--warn); }
+    .b-danger { background: rgba(239,68,68,0.1);  color: var(--danger); }
+    .b-blue   { background: rgba(59,130,246,0.1); color: var(--blue-bright); }
+
+    .due-date { font-size: 0.78rem; }
+    .due-date.overdue { color: var(--danger); font-weight: 700; }
+    .due-date.soon    { color: var(--warn); font-weight: 600; }
+    .due-date.safe    { color: var(--text-dim); }
+
+    /* Action buttons in table */
+    .tbl-btn {
+      padding: 0.32rem 0.8rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid;
+    }
+
+    .tbl-btn-primary { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.3); color: var(--blue-bright); }
+    .tbl-btn-primary:hover { background: rgba(37,99,235,0.25); }
+
+    .tbl-btn-danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: var(--danger); }
+    .tbl-btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    /* Django CSRF form inside table cell */
+    .renew-form { display: inline; }
+    .renew-form button { padding: 0.32rem 0.8rem; border-radius: var(--radius-xs); font-size: 0.72rem; font-weight: 700; border: 1px solid rgba(37,99,235,0.3); background: rgba(37,99,235,0.12); color: var(--blue-bright); cursor: pointer; transition: var(--transition); }
+    .renew-form button:hover { background: rgba(37,99,235,0.25); }
+
+    /* ============================================================
+       HISTORY TABLE
+    ============================================================ */
+    .hist-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1.35rem;
+      border-bottom: 1px solid rgba(255,255,255,0.035);
+      transition: background var(--transition);
+    }
+
+    .hist-item:hover { background: rgba(255,255,255,0.015); }
+    .hist-item:last-child { border-bottom: none; }
+
+    .hist-emoji { font-size: 1.3rem; flex-shrink:0; }
+    .hist-info { flex:1; min-width:0; }
+    .hist-title { font-size: 0.85rem; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hist-meta  { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+    .hist-date  { font-size: 0.72rem; color: var(--text-dim); white-space: nowrap; }
+
+    /* ============================================================
+       FINE SECTION
+    ============================================================ */
+    .fine-alert {
+      margin: 1.25rem;
+      background: rgba(239,68,68,0.07);
+      border: 1px solid rgba(239,68,68,0.22);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .fine-alert i { color: var(--danger); font-size: 1.1rem; margin-top: 2px; flex-shrink:0; }
+
+    .fine-title { font-size: 0.9rem; font-weight: 700; color: var(--danger); margin-bottom: 0.3rem; }
+    .fine-text  { font-size: 0.8rem; color: rgba(239,68,68,0.75); line-height:1.7; }
+
+    /* ============================================================
+       CHANGE PASSWORD SECTION
+    ============================================================ */
+    .pw-strength-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 0.45rem;
+    }
+
+    .pw-seg {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      transition: background 0.35s ease;
+    }
+
+    /* ============================================================
+       EMPTY STATE
+    ============================================================ */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      color: var(--text-dim);
+      margin-bottom: 0.85rem;
+    }
+
+    .empty-title { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+    .empty-text  { font-size: 0.82rem; color: var(--text-dim); line-height: 1.8; }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    #toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      z-index: 9999;
+      background: var(--surface-2);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--white);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+      min-width: 260px;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 1100px) {
+      .info-grid { grid-template-columns: 1fr 1fr; }
+      .info-item:nth-child(3n) { border-right: 1px solid var(--border); }
+      .info-item:nth-child(2n) { border-right: none; }
+      .profile-hero { flex-wrap: wrap; }
+      .hero-card-wrap { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      .form-grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 40px rgba(0,0,0,0.5); }
+      .main { margin-left: 0; }
+      .hamburger { display: flex; }
+      .content { padding: 1.25rem; }
+      .info-grid { grid-template-columns: 1fr; }
+      .info-item { border-right: none !important; }
+      .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      margin-right: 0.5rem;
+    }
+
+    .hamburger span { display:block; width:22px; height:2px; background:var(--text-dim); border-radius:2px; transition: var(--transition); }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset:0;
+      background: rgba(0,0,0,0.5);
+      z-index: 190;
+      backdrop-filter: blur(4px);
+    }
+
+    .sidebar-overlay.open { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-badge">G</div>
+    <div class="logo-text">
+      <strong>GPCUL</strong>
+      <span>Library System</span>
+    </div>
+  </div>
+
+  <!-- Student mini card -->
+  <div class="sidebar-student">
+    <div class="s-avatar-wrap">
+      <div class="s-avatar">
+        {% if student.profile_photo %}
+          <img src="{{ student.profile_photo.url }}" alt="{{ student.user.get_full_name }}"/>
+        {% else %}
+          {# Django template filter: initials from full name #}
+          {{ student.user.get_full_name|slice:":1" }}{{ student.user.last_name|slice:":1" }}
+        {% endif %}
+      </div>
+      <div class="online-dot"></div>
+    </div>
+    <div class="s-info">
+      <div class="s-name">{{ student.user.get_full_name }}</div>
+      <div class="s-roll">{{ student.enrollment_no }}</div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main Menu</div>
+
+    <a href="{% url 'student:dashboard' %}" class="nav-item">
+      <i class="fa-solid fa-gauge-high"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="{% url 'student:profile' %}" class="nav-item active">
+      <i class="fa-solid fa-user"></i>
+      <span>My Profile</span>
+    </a>
+
+    <a href="{% url 'student:my_books' %}" class="nav-item">
+      <i class="fa-solid fa-book-open"></i>
+      <span>My Books</span>
+      {% if borrowed_books.count > 0 %}
+        <span class="nav-badge nb-warn">{{ borrowed_books.count }}</span>
+      {% endif %}
+    </a>
+
+    <a href="{% url 'student:search' %}" class="nav-item">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search Books</span>
+    </a>
+
+    <a href="{% url 'student:history' %}" class="nav-item">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>History</span>
+    </a>
+
+    <a href="{% url 'student:saved_books' %}" class="nav-item">
+      <i class="fa-solid fa-bookmark"></i>
+      <span>Saved Books</span>
+    </a>
+
+    <div class="nav-section-label" style="margin-top:0.75rem;">Library</div>
+
+    <a href="{% url 'student:library_card' %}" class="nav-item">
+      <i class="fa-solid fa-id-card"></i>
+      <span>Library Card</span>
+    </a>
+
+    <a href="{% url 'student:fines' %}" class="nav-item">
+      <i class="fa-solid fa-indian-rupee-sign"></i>
+      <span>Fines & Dues</span>
+      {% if pending_fine > 0 %}
+        <span class="nav-badge nb-danger">₹{{ pending_fine }}</span>
+      {% endif %}
+    </a>
+
+    <div class="nav-section-label" style="margin-top:0.75rem;">Account</div>
+
+    <a href="{% url 'student:settings' %}" class="nav-item">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </a>
+
+    <a href="{% url 'student:help' %}" class="nav-item">
+      <i class="fa-solid fa-circle-question"></i>
+      <span>Help</span>
+    </a>
+  </nav>
+
+  <!-- Logout -->
+  <div class="sidebar-footer">
+    <a href="{% url 'accounts:logout' %}" class="nav-item" style="color:var(--danger);">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Sign Out</span>
+    </a>
+  </div>
+
+</aside>
+
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ============================================================
+     MAIN
+============================================================ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:0.85rem;">
+      <div class="hamburger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="breadcrumb">
+        <i class="fa-solid fa-house" style="font-size:0.72rem;"></i>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>
+        <a href="{% url 'student:dashboard' %}">Dashboard</a>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>
+        <span class="current">My Profile</span>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="icon-btn" onclick="showToast('Notifications coming soon','info')" title="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        {% if pending_fine > 0 %}<div class="notif-dot"></div>{% endif %}
+      </div>
+      <div class="icon-btn" title="Settings" onclick="switchTab('password')">
+        <i class="fa-solid fa-gear"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Django messages (success/error) -->
+  {% if messages %}
+  <div class="django-messages">
+    {% for message in messages %}
+      <div class="dj-message {{ message.tags }}">
+        <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' %}fa-circle-xmark{% elif message.tags == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── PROFILE HERO ── -->
+    <div class="profile-hero">
+
+      <!-- Avatar -->
+      <div class="profile-avatar-wrap">
+        <form method="POST" action="{% url 'student:upload_photo' %}" enctype="multipart/form-data" id="avatarForm">
+          {% csrf_token %}
+          <div class="profile-avatar" onclick="document.getElementById('avatarInput').click()" style="cursor:pointer;">
+            {% if student.profile_photo %}
+              <img src="{{ student.profile_photo.url }}" alt="{{ student.user.get_full_name }}" id="avatarImg"/>
+            {% else %}
+              <span id="avatarInitials">
+                {{ student.user.first_name|slice:":1" }}{{ student.user.last_name|slice:":1" }}
+              </span>
+            {% endif %}
+          </div>
+          <div class="avatar-upload-overlay" onclick="document.getElementById('avatarInput').click()">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <input type="file" id="avatarInput" name="profile_photo" accept="image/*" style="display:none" onchange="previewAvatar(this)"/>
+        </form>
+
+        <div class="card-status-pill {% if student.is_card_active %}csp-active{% else %}csp-inactive{% endif %}">
+          {% if student.is_card_active %}Active{% else %}Inactive{% endif %}
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="profile-info">
+        <h1 class="profile-name">{{ student.user.get_full_name }}</h1>
+
+        <div class="profile-course">
+          <i class="fa-solid fa-graduation-cap"></i>
+          {{ student.course }} &mdash; {{ student.get_semester_display }}
+        </div>
+
+        <div class="profile-meta-row">
+          <span class="profile-meta-chip">
+            <i class="fa-solid fa-hashtag"></i>
+            {{ student.enrollment_no }}
+          </span>
+          <span class="profile-meta-chip">
+            <i class="fa-solid fa-building-columns"></i>
+            {{ student.department }}
+          </span>
+          <span class="profile-meta-chip">
+            <i class="fa-regular fa-envelope"></i>
+            {{ student.user.email }}
+          </span>
+          <span class="profile-meta-chip">
+            <i class="fa-solid fa-phone"></i>
+            {{ student.phone|default:"Not set" }}
+          </span>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn btn-primary" onclick="switchTab('edit')">
+            <i class="fa-solid fa-pen"></i> Edit Profile
+          </button>
+          <a href="{% url 'student:download_card' %}" class="btn btn-outline">
+            <i class="fa-solid fa-download"></i> Download Card
+          </a>
+          <button class="btn btn-danger-outline" onclick="switchTab('password')">
+            <i class="fa-solid fa-lock"></i> Change Password
+          </button>
+        </div>
+
+        <div class="profile-stats">
+          <div class="pstat">
+            <div class="pstat-num">{{ total_borrowed }}</div>
+            <div class="pstat-label">Borrowed</div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-num">{{ total_returned }}</div>
+            <div class="pstat-label">Returned</div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-num">{{ borrowed_books.count }}</div>
+            <div class="pstat-label">Active</div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-num" {% if pending_fine > 0 %}style="color:var(--danger)"{% endif %}>
+              ₹{{ pending_fine }}
+            </div>
+            <div class="pstat-label">Fine Due</div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-num">{{ saved_books.count }}</div>
+            <div class="pstat-label">Saved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini library card -->
+      <div class="hero-card-wrap">
+        <div class="mini-lib-card">
+          <div class="mlc-top">
+            <div class="mlc-logo">
+              <strong>GPCUL</strong>
+              Library Card
+            </div>
+            <div class="mlc-chip"></div>
+          </div>
+          <div class="mlc-mid">
+            <div class="mlc-name">{{ student.user.get_full_name }}</div>
+            <div class="mlc-enroll">{{ student.enrollment_no }}</div>
+            <div class="mlc-course">{{ student.course }} · {{ student.get_semester_display }}</div>
+          </div>
+          <div class="mlc-bottom">
+            <div>
+              <div class="mlc-valid" style="margin-bottom:3px;">Card No: <span>{{ student.library_card_no }}</span></div>
+              <div class="mlc-valid">Valid till: <span>{{ student.card_valid_until|date:"M Y" }}</span></div>
+            </div>
+            <div class="mlc-qr">
+              <div class="mlc-qr-inner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /profile-hero -->
+
+    <!-- Fine alert (if any) -->
+    {% if pending_fine > 0 %}
+    <div class="section-card" style="margin-bottom:1.25rem;">
+      <div class="fine-alert" style="margin:0;border:none;border-radius:0;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <div>
+          <div class="fine-title">₹{{ pending_fine }} Fine Pending</div>
+          <div class="fine-text">
+            You have an outstanding library fine. Please clear it to continue borrowing books.
+          </div>
+          <a href="{% url 'student:pay_fine' %}" class="btn btn-danger-outline" style="margin-top:0.75rem;font-size:0.78rem;padding:0.45rem 1rem;">
+            <i class="fa-solid fa-credit-card"></i> Pay Fine Now
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ── TAB NAVIGATION ── -->
+    <div class="tab-nav" role="tablist">
+      <button class="tab-btn active" onclick="switchTab('info')" id="tab-info">
+        <i class="fa-solid fa-user"></i> Personal Info
+      </button>
+      <button class="tab-btn" onclick="switchTab('books')" id="tab-books">
+        <i class="fa-solid fa-book-open"></i> Current Books
+        {% if borrowed_books.count > 0 %}({{ borrowed_books.count }}){% endif %}
+      </button>
+      <button class="tab-btn" onclick="switchTab('history')" id="tab-history">
+        <i class="fa-solid fa-clock-rotate-left"></i> History
+      </button>
+      <button class="tab-btn" onclick="switchTab('edit')" id="tab-edit">
+        <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+      </button>
+      <button class="tab-btn" onclick="switchTab('password')" id="tab-password">
+        <i class="fa-solid fa-lock"></i> Change Password
+      </button>
+    </div>
+
+    <!-- ===================================================
+         TAB 1: PERSONAL INFO
+    =================================================== -->
+    <div class="tab-panel active" id="panel-info">
+
+      <!-- Academic Info -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-graduation-cap"></i> Academic Information</div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Full Name</div>
+            <div class="info-value">{{ student.user.get_full_name }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Enrollment No.</div>
+            <div class="info-value">
+              <i class="fa-solid fa-hashtag" style="font-size:0.7rem;color:var(--text-dim);"></i>
+              {{ student.enrollment_no }}
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Course / Programme</div>
+            <div class="info-value">{{ student.course }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Department</div>
+            <div class="info-value">{{ student.department }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Semester</div>
+            <div class="info-value">{{ student.get_semester_display }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Section</div>
+            <div class="info-value">{{ student.section|default:"—" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Admission Year</div>
+            <div class="info-value">{{ student.membership_date|date:"Y" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Member Since</div>
+            <div class="info-value">{{ student.membership_date|date:"d M Y" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Library Card No.</div>
+            <div class="info-value">{{ student.library_card_no }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Info -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-circle-user"></i> Personal Details</div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Date of Birth</div>
+            <div class="info-value">{{ student.date_of_birth|date:"d M Y"|default:"—" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Gender</div>
+            <div class="info-value">{{ student.get_gender_display|default:"—" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Blood Group</div>
+            <div class="info-value">{{ student.blood_group|default:"—" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Email Address</div>
+            <div class="info-value">
+              <i class="fa-regular fa-envelope" style="font-size:0.7rem;color:var(--text-dim);"></i>
+              {{ student.user.email }}
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Mobile Number</div>
+            <div class="info-value">{{ student.phone|default:"Not set" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Address</div>
+            <div class="info-value {% if not student.address %}muted{% endif %}">
+              {{ student.address|default:"Not provided" }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Library Card Details -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-id-card"></i> Library Membership</div>
+          <a href="{% url 'student:download_card' %}" class="card-action">
+            <i class="fa-solid fa-download"></i> Download Card
+          </a>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Card Status</div>
+            <div class="info-value">
+              <span class="badge {% if student.is_card_active %}b-ok{% else %}b-danger{% endif %}">
+                <i class="fa-solid fa-circle"></i>
+                {% if student.is_card_active %}Active{% else %}Inactive{% endif %}
+              </span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Card Number</div>
+            <div class="info-value">{{ student.library_card_no }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Valid Until</div>
+            <div class="info-value">{{ student.card_valid_until|date:"d M Y" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Books Currently Issued</div>
+            <div class="info-value">{{ borrowed_books.count }} / 5</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Total Books Borrowed</div>
+            <div class="info-value">{{ total_borrowed }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Outstanding Fine</div>
+            <div class="info-value {% if pending_fine > 0 %}" style="color:var(--danger){% endif %}">
+              ₹{{ pending_fine|floatformat:2 }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================================================
+         TAB 2: CURRENT BOOKS
+    =================================================== -->
+    <div class="tab-panel" id="panel-books">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-book-open"></i> Currently Borrowed Books</div>
+          <span class="badge b-blue">{{ borrowed_books.count }} Active</span>
+        </div>
+
+        {% if borrowed_books %}
+        <div style="overflow-x:auto;">
+          <table class="books-table">
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>ISBN</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Fine</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {# Django template loop over borrowed_books QuerySet #}
+              {% for record in borrowed_books %}
+              <tr>
+                <td>
+                  <div class="book-cell">
+                    <span class="book-emoji">📚</span>
+                    <div>
+                      <div class="book-title-text">{{ record.book.title }}</div>
+                      <div class="book-sub-text">{{ record.book.author }} · {{ record.book.category }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="font-size:0.75rem;color:var(--text-dim);">{{ record.book.isbn }}</td>
+                <td style="font-size:0.78rem;color:var(--text-dim);">{{ record.issue_date|date:"d M Y" }}</td>
+                <td>
+                  {% if record.is_overdue %}
+                    <span class="due-date overdue">
+                      <i class="fa-solid fa-triangle-exclamation" style="font-size:0.68rem;"></i>
+                      {{ record.due_date|date:"d M Y" }}
+                      ({{ record.days_overdue }} day{{ record.days_overdue|pluralize }} overdue)
+                    </span>
+                  {% else %}
+                    <span class="due-date {% if record.days_remaining <= 3 %}soon{% else %}safe{% endif %}">
+                      {{ record.due_date|date:"d M Y" }}
+                      ({{ record.days_remaining }} day{{ record.days_remaining|pluralize }} left)
+                    </span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if record.is_overdue %}
+                    <span class="badge b-danger"><i class="fa-solid fa-clock"></i> Overdue</span>
+                  {% elif record.days_remaining <= 3 %}
+                    <span class="badge b-warn"><i class="fa-solid fa-clock"></i> Due Soon</span>
+                  {% else %}
+                    <span class="badge b-ok"><i class="fa-solid fa-circle-check"></i> Active</span>
+                  {% endif %}
+                </td>
+                <td style="font-size:0.82rem;{% if record.is_overdue %}color:var(--danger);font-weight:700;{% else %}color:var(--text-dim);{% endif %}">
+                  {% if record.is_overdue %}₹{{ record.fine_amount }}{% else %}—{% endif %}
+                </td>
+                <td>
+                  {# Django form with CSRF for renew action #}
+                  {% if not record.is_overdue %}
+                  <form method="POST" action="{% url 'student:renew_book' record.id %}" class="renew-form">
+                    {% csrf_token %}
+                    <button type="submit">
+                      <i class="fa-solid fa-rotate"></i> Renew
+                    </button>
+                  </form>
+                  {% else %}
+                  <a href="{% url 'student:pay_fine' %}" class="tbl-btn tbl-btn-danger">
+                    Pay Fine
+                  </a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-book-open"></i></div>
+          <div class="empty-title">No Books Currently Borrowed</div>
+          <div class="empty-text">
+            You have not issued any books right now.<br/>
+            Search the catalogue to find books to borrow.
+          </div>
+          <a href="{% url 'student:search' %}" class="btn btn-primary" style="margin-top:1.25rem;display:inline-flex;">
+            <i class="fa-solid fa-magnifying-glass"></i> Search Books
+          </a>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- ===================================================
+         TAB 3: HISTORY
+    =================================================== -->
+    <div class="tab-panel" id="panel-history">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Borrowing History</div>
+          <span style="font-size:0.75rem;color:var(--text-dim);">{{ borrow_history.count }} record{{ borrow_history.count|pluralize }}</span>
+        </div>
+
+        {% if borrow_history %}
+          {% for record in borrow_history %}
+          <div class="hist-item">
+            <span class="hist-emoji">📖</span>
+            <div class="hist-info">
+              <div class="hist-title">{{ record.book.title }}</div>
+              <div class="hist-meta">
+                {{ record.book.author }}
+                &nbsp;·&nbsp;
+                Issued: {{ record.issue_date|date:"d M Y" }}
+                &nbsp;·&nbsp;
+                Returned: {{ record.return_date|date:"d M Y" }}
+                {% if record.fine_paid %}
+                  &nbsp;·&nbsp;
+                  <span style="color:var(--danger);">Fine paid: ₹{{ record.fine_paid }}</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="hist-date">{{ record.return_date|date:"d M" }}</div>
+          </div>
+          {% endfor %}
+
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          <div class="empty-title">No History Yet</div>
+          <div class="empty-text">Your returned books will appear here.</div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- ===================================================
+         TAB 4: EDIT PROFILE
+    =================================================== -->
+    <div class="tab-panel" id="panel-edit">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-pen-to-square"></i> Edit Profile</div>
+        </div>
+
+        {#
+          Django view: student_edit_profile(request)
+          Form class:  StudentProfileForm(forms.ModelForm)
+          Template tag: {{ form.as_p }} or manual field rendering below
+
+          views.py snippet:
+          ─────────────────
+          def student_edit_profile(request):
+              student = get_object_or_404(Student, user=request.user)
+              if request.method == 'POST':
+                  form = StudentProfileForm(request.POST, instance=student)
+                  user_form = UserUpdateForm(request.POST, instance=request.user)
+                  if form.is_valid() and user_form.is_valid():
+                      form.save()
+                      user_form.save()
+                      messages.success(request, 'Profile updated successfully!')
+                      return redirect('student:profile')
+              else:
+                  form = StudentProfileForm(instance=student)
+                  user_form = UserUpdateForm(instance=request.user)
+              return render(request, 'student/profile.html', {...})
+
+          forms.py snippet:
+          ─────────────────
+          class StudentProfileForm(forms.ModelForm):
+              class Meta:
+                  model = Student
+                  fields = ['phone', 'address', 'date_of_birth', 'gender', 'blood_group', 'section']
+                  widgets = {
+                      'phone': forms.TextInput(attrs={'class':'form-input','placeholder':'+91 XXXXX XXXXX'}),
+                      'address': forms.Textarea(attrs={'class':'form-textarea','rows':3}),
+                      'date_of_birth': forms.DateInput(attrs={'class':'form-input','type':'date'}),
+                      'gender': forms.Select(attrs={'class':'form-select'}),
+                      'blood_group': forms.TextInput(attrs={'class':'form-input'}),
+                      'section': forms.TextInput(attrs={'class':'form-input'}),
+                  }
+        #}
+
+        <form method="POST" action="{% url 'student:edit_profile' %}" class="edit-form">
+          {% csrf_token %}
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">First Name <span class="req">*</span></label>
+              {# {{ user_form.first_name }} — use widget attrs for class #}
+              <input type="text" name="first_name" class="form-input {% if user_form.first_name.errors %}errorfield{% endif %}"
+                value="{{ student.user.first_name }}" placeholder="First name" required />
+              {% if user_form.first_name.errors %}
+                <span class="field-errors">{{ user_form.first_name.errors|join:", " }}</span>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Last Name <span class="req">*</span></label>
+              <input type="text" name="last_name" class="form-input"
+                value="{{ student.user.last_name }}" placeholder="Last name" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address <span class="req">*</span></label>
+            <input type="email" name="email" class="form-input"
+              value="{{ student.user.email }}" required />
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label">Mobile Number</label>
+              <input type="tel" name="phone" class="form-input {% if form.phone.errors %}errorfield{% endif %}"
+                value="{{ student.phone }}" placeholder="+91 XXXXX XXXXX" />
+              {% if form.phone.errors %}
+                <span class="field-errors">{{ form.phone.errors|join:", " }}</span>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" name="date_of_birth" class="form-input"
+                value="{{ student.date_of_birth|date:'Y-m-d'|default:'' }}" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="">Select</option>
+                <option value="M" {% if student.gender == 'M' %}selected{% endif %}>Male</option>
+                <option value="F" {% if student.gender == 'F' %}selected{% endif %}>Female</option>
+                <option value="O" {% if student.gender == 'O' %}selected{% endif %}>Other</option>
+                <option value="N" {% if student.gender == 'N' %}selected{% endif %}>Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              <input type="text" name="blood_group" class="form-input"
+                value="{{ student.blood_group|default:'' }}" placeholder="e.g. B+" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Section</label>
+              <input type="text" name="section" class="form-input"
+                value="{{ student.section|default:'' }}" placeholder="e.g. A" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Address</label>
+            <textarea name="address" class="form-textarea"
+              placeholder="Village / Town, District, J&K">{{ student.address|default:'' }}</textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-floppy-disk"></i> Save Changes
+            </button>
+            <button type="button" class="btn btn-outline" onclick="switchTab('info')">
+              Cancel
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ===================================================
+         TAB 5: CHANGE PASSWORD
+    =================================================== -->
+    <div class="tab-panel" id="panel-password">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-lock"></i> Change Password</div>
+        </div>
+
+        {#
+          Django view: student_change_password(request)
+          Use Django's PasswordChangeForm or a custom form.
+
+          views.py snippet:
+          ─────────────────
+          from django.contrib.auth import update_session_auth_hash
+          from django.contrib.auth.forms import PasswordChangeForm
+
+          def student_change_password(request):
+              form = PasswordChangeForm(request.user, request.POST or None)
+              if request.method == 'POST' and form.is_valid():
+                  user = form.save()
+                  update_session_auth_hash(request, user)
+                  messages.success(request, 'Password changed successfully!')
+                  return redirect('student:profile')
+              return render(request, 'student/profile.html', {'pw_form': form, ...})
+        #}
+
+        <form method="POST" action="{% url 'student:change_password' %}" class="edit-form">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label">Current Password <span class="req">*</span></label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <input type="password" name="old_password" id="oldPw"
+                class="form-input {% if pw_form.old_password.errors %}errorfield{% endif %}"
+                placeholder="Your current password" style="padding-right:2.75rem;" />
+              <button type="button" onclick="togglePw('oldPw',this)"
+                style="position:absolute;right:1rem;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            {% if pw_form.old_password.errors %}
+              <span class="field-errors">{{ pw_form.old_password.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">New Password <span class="req">*</span></label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <input type="password" name="new_password1" id="newPw"
+                class="form-input {% if pw_form.new_password1.errors %}errorfield{% endif %}"
+                placeholder="Min. 8 characters" oninput="checkStrength(this.value)"
+                style="padding-right:2.75rem;" />
+              <button type="button" onclick="togglePw('newPw',this)"
+                style="position:absolute;right:1rem;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            <div class="pw-strength-bar">
+              <div class="pw-seg" id="seg1"></div>
+              <div class="pw-seg" id="seg2"></div>
+              <div class="pw-seg" id="seg3"></div>
+              <div class="pw-seg" id="seg4"></div>
+            </div>
+            <p id="strengthLabel" style="font-size:0.7rem;color:var(--text-dim);margin-top:0.25rem;">
+              Enter a new password
+            </p>
+            {% if pw_form.new_password1.errors %}
+              <span class="field-errors">{{ pw_form.new_password1.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm New Password <span class="req">*</span></label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <input type="password" name="new_password2" id="confPw"
+                class="form-input {% if pw_form.new_password2.errors %}errorfield{% endif %}"
+                placeholder="Re-enter new password"
+                style="padding-right:2.75rem;" />
+              <button type="button" onclick="togglePw('confPw',this)"
+                style="position:absolute;right:1rem;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.9rem;">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+            {% if pw_form.new_password2.errors %}
+              <span class="field-errors">{{ pw_form.new_password2.errors|join:", " }}</span>
+            {% endif %}
+          </div>
+
+          <!-- Django password requirements hint -->
+          <div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius-xs);padding:0.85rem 1rem;font-size:0.78rem;color:rgba(59,130,246,0.8);line-height:1.75;">
+            <i class="fa-solid fa-circle-info" style="margin-right:0.4rem;"></i>
+            Password must be at least 8 characters, not entirely numeric, and not too similar to your personal info.
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-key"></i> Update Password
+            </button>
+            <button type="button" class="btn btn-outline" onclick="switchTab('info')">
+              Cancel
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div id="toast">
+  <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+  <span id="toastMsg">Done.</span>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+  /* --- Tab switching --- */
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+    const btn = document.getElementById('tab-' + name);
+    const panel = document.getElementById('panel-' + name);
+
+    if (btn)   btn.classList.add('active');
+    if (panel) panel.classList.add('active');
+
+    // Scroll to tabs smoothly
+    document.querySelector('.tab-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* --- Mobile sidebar --- */
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+
+  /* --- Avatar preview --- */
+  function previewAvatar(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      // Remove initials span, show img
+      const initials = document.getElementById('avatarInitials');
+      if (initials) initials.style.display = 'none';
+      let img = document.getElementById('avatarImg');
+      if (!img) {
+        img = document.createElement('img');
+        img.id = 'avatarImg';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        document.querySelector('.profile-avatar').appendChild(img);
+      }
+      img.src = e.target.result;
+      img.style.display = 'block';
+
+      // Auto-submit the avatar form
+      showToast('Uploading photo…', 'info');
+      document.getElementById('avatarForm').submit();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* --- Password visibility toggle --- */
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    const isHidden = inp.type === 'password';
+    inp.type = isHidden ? 'text' : 'password';
+    btn.querySelector('i').className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+  }
+
+  /* --- Password strength --- */
+  function checkStrength(val) {
+    const colors = ['#ef4444','#f59e0b','#eab308','#22c55e'];
+    const labels = ['Weak','Fair','Good','Strong'];
+    let score = 0;
+    if (val.length >= 8)           score++;
+    if (/[A-Z]/.test(val))         score++;
+    if (/[0-9]/.test(val))         score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('seg' + i).style.background =
+        i <= score ? colors[score - 1] : 'rgba(255,255,255,0.08)';
+    }
+
+    const label = document.getElementById('strengthLabel');
+    label.textContent = val.length === 0 ? 'Enter a new password'
+      : `Strength: ${labels[score-1] || 'Very Weak'}`;
+    label.style.color = val.length === 0 ? 'var(--text-dim)' : (colors[score-1] || '#ef4444');
+  }
+
+  /* --- Auto-open tab from Django redirect (e.g. after save) ---
+     Usage in view: return redirect(reverse('student:profile') + '?tab=edit')
+  */
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab && document.getElementById('tab-' + tab)) {
+      switchTab(tab);
+    }
+  })();
+
+  /* --- Auto-dismiss Django messages after 5s --- */
+  document.querySelectorAll('.dj-message').forEach(el => {
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.5s ease';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 500);
+    }, 5000);
+  });
+
+  /* --- Toast --- */
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    const icon  = document.getElementById('toastIcon');
+    const msgEl = document.getElementById('toastMsg');
+    const cfg = {
+      success: { ic: 'fa-circle-check',        color: 'var(--success)',      border: 'rgba(34,197,94,0.3)' },
+      info:    { ic: 'fa-circle-info',           color: 'var(--blue-bright)', border: 'rgba(59,130,246,0.3)' },
+      warn:    { ic: 'fa-triangle-exclamation', color: 'var(--warn)',         border: 'rgba(245,158,11,0.3)' },
+      error:   { ic: 'fa-circle-xmark',         color: 'var(--danger)',       border: 'rgba(239,68,68,0.3)' },
+    };
+    const c = cfg[type] || cfg.success;
+    icon.className = `fa-solid ${c.ic}`;
+    icon.style.color = c.color;
+    toast.style.borderColor = c.border;
+    msgEl.textContent = msg;
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.style.transform = 'translateY(100px)';
+      toast.style.opacity = '0';
+    }, 3500);
+  }
+</script>
+
+</body>
+</html>
