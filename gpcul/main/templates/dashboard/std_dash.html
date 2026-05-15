@@ -5,16 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Dashboard – GPCUL Library System</title>
-
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
     <style>
-        /* ============================================================
-       DESIGN TOKENS
-    ============================================================ */
         :root {
             --navy: #0a1628;
             --navy-mid: #112240;
@@ -36,10 +31,8 @@
             --warn: #fbbf24;
             --error: #f87171;
             --purple: #a78bfa;
-
             --sidebar-w: 260px;
             --topbar-h: 70px;
-
             --font-display: 'Playfair Display', Georgia, serif;
             --font-body: 'DM Sans', sans-serif;
             --radius-sm: 8px;
@@ -48,9 +41,6 @@
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* ============================================================
-       RESET
-    ============================================================ */
         *,
         *::before,
         *::after {
@@ -89,9 +79,6 @@
             background: none;
         }
 
-        /* ============================================================
-       SCROLLBAR
-    ============================================================ */
         ::-webkit-scrollbar {
             width: 5px;
         }
@@ -109,9 +96,7 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* ============================================================
-       SIDEBAR
-    ============================================================ */
+        /* SIDEBAR */
         .sidebar {
             width: var(--sidebar-w);
             min-height: 100vh;
@@ -128,7 +113,6 @@
             overflow-y: auto;
         }
 
-        /* Sidebar top logo */
         .sidebar-logo {
             padding: 1.5rem 1.5rem 1.25rem;
             display: flex;
@@ -165,7 +149,6 @@
             letter-spacing: 0.05em;
         }
 
-        /* Student mini-profile in sidebar */
         .sidebar-profile {
             padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border);
@@ -175,20 +158,28 @@
         }
 
         .profile-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--blue-mid), var(--purple));
-            display: grid;
-            place-items: center;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--white);
-            flex-shrink: 0;
-            position: relative;
-        }
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg, var(--blue-mid), var(--purple));
+
+    border: 3px solid rgba(255, 255, 255, 0.2);
+
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
         .online-dot {
             position: absolute;
             bottom: 1px;
@@ -213,7 +204,6 @@
             margin-top: 1px;
         }
 
-        /* Nav sections */
         .nav-section {
             padding: 1.25rem 1rem 0.5rem;
         }
@@ -275,7 +265,6 @@
             border-radius: 0 3px 3px 0;
         }
 
-        /* Badge on nav item */
         .nav-badge {
             margin-left: auto;
             background: var(--blue-mid);
@@ -297,7 +286,6 @@
             background: var(--error);
         }
 
-        /* Sidebar footer */
         .sidebar-footer {
             margin-top: auto;
             padding: 1.25rem 1rem;
@@ -312,9 +300,7 @@
             background: rgba(248, 113, 113, 0.08);
         }
 
-        /* ============================================================
-       MAIN AREA
-    ============================================================ */
+        /* MAIN */
         .main {
             margin-left: var(--sidebar-w);
             flex: 1;
@@ -323,9 +309,7 @@
             min-height: 100vh;
         }
 
-        /* ============================================================
-       TOPBAR
-    ============================================================ */
+        /* TOPBAR */
         .topbar {
             height: var(--topbar-h);
             background: rgba(10, 22, 40, 0.8);
@@ -376,7 +360,6 @@
             font-weight: 600;
         }
 
-        /* Search bar */
         .topbar-search {
             position: relative;
             display: flex;
@@ -420,7 +403,6 @@
             gap: 1rem;
         }
 
-        /* Icon buttons in topbar */
         .icon-btn {
             width: 38px;
             height: 38px;
@@ -452,38 +434,46 @@
             border: 2px solid var(--navy);
         }
 
-        /* Topbar avatar */
         .topbar-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--blue-mid), var(--purple));
-            display: grid;
-            place-items: center;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--white);
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: border-color var(--transition);
-        }
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #444;
+    color: white;
+    font-weight: bold;
+}
+
+.topbar-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
         .topbar-avatar:hover {
             border-color: var(--accent);
         }
 
-        /* ============================================================
-       PAGE CONTENT
-    ============================================================ */
+        /* PAGE CONTENT */
         .content {
             padding: 2rem;
             flex: 1;
         }
 
-        /* ============================================================
-       WELCOME BANNER
-    ============================================================ */
+        /* PAGE SECTIONS (views) */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        /* WELCOME BANNER */
         .welcome-banner {
             background: linear-gradient(135deg, var(--blue) 0%, #1e3a8a 50%, var(--navy-mid) 100%);
             border: 1px solid rgba(37, 99, 235, 0.3);
@@ -495,16 +485,13 @@
             margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
-            animation: fadeUp 0.5s ease both;
         }
 
         .welcome-banner::before {
             content: '';
             position: absolute;
             inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
@@ -594,9 +581,7 @@
             transform: translateY(-1px);
         }
 
-        /* ============================================================
-       STATS GRID
-    ============================================================ */
+        /* STATS GRID */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -614,22 +599,6 @@
             gap: 1rem;
             transition: var(--transition);
             animation: fadeUp 0.5s ease both;
-        }
-
-        .stat-card:nth-child(1) {
-            animation-delay: 0.05s;
-        }
-
-        .stat-card:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .stat-card:nth-child(3) {
-            animation-delay: 0.15s;
-        }
-
-        .stat-card:nth-child(4) {
-            animation-delay: 0.2s;
         }
 
         .stat-card:hover {
@@ -717,9 +686,7 @@
             color: var(--accent);
         }
 
-        /* ============================================================
-       TWO-COLUMN GRID
-    ============================================================ */
+        /* GRID LAYOUTS */
         .two-col {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -734,9 +701,7 @@
             margin-bottom: 1.25rem;
         }
 
-        /* ============================================================
-       SECTION CARD
-    ============================================================ */
+        /* SECTION CARD */
         .section-card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -779,9 +744,7 @@
             color: var(--accent);
         }
 
-        /* ============================================================
-       BORROWED BOOKS TABLE
-    ============================================================ */
+        /* TABLE */
         .books-table {
             width: 100%;
             border-collapse: collapse;
@@ -821,7 +784,6 @@
             border-bottom: none;
         }
 
-        /* Book cover thumb */
         .book-thumb {
             width: 36px;
             height: 48px;
@@ -852,7 +814,7 @@
             margin-top: 1px;
         }
 
-        /* Status badges */
+        /* BADGES */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -883,7 +845,6 @@
             color: #60a5fa;
         }
 
-        /* Due date cell */
         .due-date {
             font-size: 0.82rem;
         }
@@ -902,7 +863,7 @@
             color: var(--text-muted);
         }
 
-        /* Table action button */
+        /* TABLE BUTTONS */
         .tbl-btn {
             padding: 0.35rem 0.8rem;
             border-radius: var(--radius-sm);
@@ -933,9 +894,7 @@
             background: rgba(248, 113, 113, 0.2);
         }
 
-        /* ============================================================
-       ACTIVITY FEED
-    ============================================================ */
+        /* ACTIVITY */
         .activity-list {
             padding: 0.5rem 0;
         }
@@ -989,9 +948,7 @@
             margin-top: 0.2rem;
         }
 
-        /* ============================================================
-       LIBRARY CARD PREVIEW
-    ============================================================ */
+        /* LIBRARY CARD */
         .lib-card {
             margin: 1.25rem;
             background: linear-gradient(135deg, #1a3a6b 0%, #0f2044 60%, #0d1b38 100%);
@@ -1006,9 +963,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 30px 30px;
         }
 
@@ -1052,23 +1007,27 @@
         }
 
         .lib-card-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--blue-mid), var(--purple));
-            display: grid;
-            place-items: center;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--white);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
-        }
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #444;
+    color: white;
+    font-weight: bold;
+}
+
+.lib-card-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
         .lib-card-name {
             font-family: var(--font-display);
-            font-size: 1rem;
+            font-size: 1.2rem;
             color: var(--white);
             font-weight: 700;
         }
@@ -1100,7 +1059,6 @@
             letter-spacing: 0.12em;
         }
 
-        /* QR code simulation */
         .qr-block {
             width: 52px;
             height: 52px;
@@ -1114,8 +1072,7 @@
         .qr-inner {
             width: 100%;
             height: 100%;
-            background:
-                repeating-conic-gradient(var(--navy) 0% 25%, transparent 0% 50%) 0 0 / 8px 8px;
+            background: repeating-conic-gradient(var(--navy) 0% 25%, transparent 0% 50%) 0 0/8px 8px;
         }
 
         .lib-card-valid {
@@ -1151,9 +1108,7 @@
             color: var(--white);
         }
 
-        /* ============================================================
-       QUICK ACTIONS
-    ============================================================ */
+        /* QUICK ACTIONS */
         .quick-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1198,9 +1153,7 @@
             line-height: 1.3;
         }
 
-        /* ============================================================
-       FINE ALERT
-    ============================================================ */
+        /* FINE ALERT */
         .fine-alert {
             margin: 0 1.25rem 1.25rem;
             background: rgba(248, 113, 113, 0.08);
@@ -1255,9 +1208,7 @@
             background: rgba(248, 113, 113, 0.25);
         }
 
-        /* ============================================================
-       READING HISTORY / PROGRESS
-    ============================================================ */
+        /* HISTORY LIST */
         .history-list {
             padding: 0.25rem 0;
         }
@@ -1316,9 +1267,7 @@
             white-space: nowrap;
         }
 
-        /* ============================================================
-       ANNOUNCEMENTS
-    ============================================================ */
+        /* ANNOUNCEMENTS */
         .announcement-item {
             padding: 1rem 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -1382,9 +1331,7 @@
             margin-top: 4px;
         }
 
-        /* ============================================================
-       ANIMATIONS
-    ============================================================ */
+        /* ANIMATIONS */
         @keyframes fadeUp {
             from {
                 opacity: 0;
@@ -1397,9 +1344,7 @@
             }
         }
 
-        /* ============================================================
-       NOTIFICATION PANEL
-    ============================================================ */
+        /* NOTIFICATION PANEL */
         .notif-overlay {
             position: fixed;
             inset: 0;
@@ -1503,25 +1448,837 @@
         }
 
         /* ============================================================
-       MOBILE RESPONSIVE
-    ============================================================ */
-        @media (max-width: 1100px) {
+           SECTION-SPECIFIC STYLES
+        ============================================================ */
+
+        /* Page heading */
+        .page-heading {
+            margin-bottom: 1.75rem;
+        }
+
+        .page-heading h2 {
+            font-family: var(--font-display);
+            font-size: 1.7rem;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .page-heading p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* SEARCH BOOKS */
+        .search-bar-big {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar-big input {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--border-mid);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1.25rem;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--white);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-bar-big input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-bar-big input:focus {
+            border-color: var(--blue-mid);
+        }
+
+        .search-bar-big button {
+            padding: 0.85rem 1.75rem;
+            background: var(--blue-mid);
+            color: var(--white);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .search-bar-big button:hover {
+            background: var(--blue);
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border: 1px solid var(--border-mid);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-pill.active,
+        .filter-pill:hover {
+            background: rgba(37, 99, 235, 0.15);
+            border-color: rgba(37, 99, 235, 0.4);
+            color: var(--white);
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .book-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            border-color: var(--border-mid);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .book-card-cover {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .book-card-body {
+            padding: 1rem;
+        }
+
+        .book-card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            margin-bottom: 0.25rem;
+        }
+
+        .book-card-author {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .book-card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.75rem;
+        }
+
+        .availability {
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .avail-yes {
+            color: var(--success);
+        }
+
+        .avail-no {
+            color: var(--error);
+        }
+
+        .borrow-btn {
+            padding: 0.3rem 0.7rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            color: var(--blue-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .borrow-btn:hover {
+            background: rgba(37, 99, 235, 0.3);
+        }
+
+        /* SAVED BOOKS */
+        .saved-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        .saved-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: var(--transition);
+        }
+
+        .saved-card:hover {
+            border-color: var(--border-mid);
+            transform: translateY(-2px);
+        }
+
+        .saved-thumb {
+            width: 44px;
+            height: 60px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .saved-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .saved-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.2rem;
+        }
+
+        .saved-author {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .saved-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .unsave-btn {
+            padding: 0.28rem 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: var(--error);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .unsave-btn:hover {
+            background: rgba(248, 113, 113, 0.2);
+        }
+
+        /* FINES */
+        .fines-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .fine-stat {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .fine-stat-num {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .fine-stat-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .fines-table-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .pay-btn {
+            padding: 0.35rem 0.8rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: var(--success);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pay-btn:hover {
+            background: rgba(52, 211, 153, 0.2);
+        }
+
+        /* RENEW BOOKS */
+        .renew-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .renew-card:hover {
+            border-color: var(--border-mid);
+        }
+
+        .renew-book-icon {
+            width: 52px;
+            height: 68px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .renew-info {
+            flex: 1;
+        }
+
+        .renew-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.2rem;
+        }
+
+        .renew-author {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .renew-due {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .renew-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .renew-count {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* PROFILE */
+        .profile-header-card {
+            background: linear-gradient(135deg, var(--blue) 0%, #1e3a8a 50%, var(--navy-mid) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .profile-header-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-header-info h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--white);
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-header-info p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .profile-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.45rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-mid);
+            border-radius: var(--radius-sm);
+            padding: 0.7rem 1rem;
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            color: var(--white);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--blue-mid);
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group select option {
+            background: var(--navy-mid);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            padding-top: 0.5rem;
+        }
+
+        .btn-primary {
+            padding: 0.65rem 1.5rem;
+            background: var(--blue-mid);
+            color: var(--white);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background: var(--blue);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            padding: 0.65rem 1.5rem;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid var(--border-mid);
+            transition: var(--transition);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--border-mid);
+            color: var(--white);
+        }
+
+        /* SETTINGS */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 1.5rem;
+        }
+
+        .settings-nav {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            height: fit-content;
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.65rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 2px;
+        }
+
+        .settings-nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+        }
+
+        .settings-nav-item.active {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--white);
+        }
+
+        .settings-nav-item i {
+            width: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .settings-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+        }
+
+        .settings-panel h3 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .settings-panel p.sub {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toggle-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .toggle-info strong {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--white);
+            margin-bottom: 2px;
+        }
+
+        .toggle-info span {
+            font-size: 0.77rem;
+            color: var(--text-muted);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            transition: var(--transition);
+            border: 1px solid var(--border-mid);
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 2px;
+            top: 2px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: rgba(37, 99, 235, 0.4);
+            border-color: var(--blue-mid);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+            background: var(--blue-light);
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 1.5rem 0;
+        }
+
+        /* HELP */
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .help-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .help-card:hover {
+            border-color: var(--border-mid);
+            transform: translateY(-3px);
+        }
+
+        .help-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            display: grid;
+            place-items: center;
+            font-size: 1.3rem;
+            margin: 0 auto 1rem;
+        }
+
+        .help-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.3rem;
+        }
+
+        .help-card p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .faq-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .faq-q {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--white);
+            transition: background var(--transition);
+        }
+
+        .faq-q:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .faq-a {
+            padding: 0 1.5rem 1rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            display: none;
+        }
+
+        .faq-a.open {
+            display: block;
+        }
+
+        .contact-form {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+        }
+
+        /* NOTIFICATIONS PAGE */
+        .notif-page-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: flex-start;
+        }
+
+        .notif-page-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-page-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .notif-page-body {
+            flex: 1;
+        }
+
+        .notif-page-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.2rem;
+        }
+
+        .notif-page-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .notif-page-time {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        /* MY LIBRARY CARD PAGE */
+        .lib-card-page {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .lib-card-full {
+            background: linear-gradient(135deg, #1a3a6b 0%, #0f2044 60%, #0d1b38 100%);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .lib-card-full::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .lib-card-full-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue-mid), var(--purple));
+            display: grid;
+            place-items: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--white);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            margin: 1rem auto;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1100px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-        }
 
-        @media (max-width: 900px) {
-            .three-col {
-                grid-template-columns: 1fr;
-            }
-
-            .two-col {
+            .settings-layout {
                 grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 768px) {
+        @media(max-width:900px) {
+
+            .three-col,
+            .two-col,
+            .profile-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width:768px) {
             .sidebar {
                 transform: translateX(-100%);
             }
@@ -1543,10 +2300,6 @@
                 width: 180px;
             }
 
-            .topbar-search input:focus {
-                width: 200px;
-            }
-
             .welcome-banner {
                 flex-direction: column;
                 gap: 1.5rem;
@@ -1558,7 +2311,7 @@
             }
         }
 
-        @media (max-width: 480px) {
+        @media(max-width:480px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -1566,9 +2319,12 @@
             .topbar-search {
                 display: none;
             }
+
+            .fines-summary {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* Overlay for mobile sidebar */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -1586,12 +2342,8 @@
 
 <body>
 
-    <!-- ============================================================
-       SIDEBAR
-  ============================================================ -->
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
-
-        <!-- Logo -->
         <div class="sidebar-logo">
             <div class="logo-badge">G</div>
             <div class="logo-text">
@@ -1599,43 +2351,38 @@
                 <span>Library System</span>
             </div>
         </div>
-
-        <!-- Student mini profile -->
         <div class="sidebar-profile">
             <div class="profile-avatar">
-                RS
-                <div class="online-dot"></div>
+                {% if photo %}
+                <img src="{{ photo.url }}" alt="Profile Photo">
+                {% else %}
+                {{ request.user.first_name|slice:":1" }}
+                {% endif %}
             </div>
-<div class="profile-info">
-                <div class="name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
-                <div class="roll">{{ enrollment }}</div>
+            <div class="profile-info">
+                <div class="name">{{full_name}} </div>
+                <div class="roll">{{enrollment}} </div>
             </div>
         </div>
 
-        <!-- Main navigation -->
         <div class="nav-section">
             <p class="nav-section-label">Main Menu</p>
             <ul>
-                <li class="nav-item active" onclick="setActive(this)">
-                    <i class="fa-solid fa-gauge-high"></i>
-                    <span>Dashboard</span>
+                <li class="nav-item active" onclick="navigate('dashboard',this)">
+                    <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-book-open"></i>
-                    <span>My Books</span>
+                <li class="nav-item" onclick="navigate('my-books',this)">
+                    <i class="fa-solid fa-book-open"></i><span>My Books</span>
                     <span class="nav-badge">3</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <span>Search Books</span>
+                <li class="nav-item" onclick="navigate('search-books',this)">
+                    <i class="fa-solid fa-magnifying-glass"></i><span>Search Books</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span>History</span>
+                <li class="nav-item" onclick="navigate('history',this)">
+                    <i class="fa-solid fa-clock-rotate-left"></i><span>History</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-bookmark"></i>
-                    <span>Saved</span>
+                <li class="nav-item" onclick="navigate('saved',this)">
+                    <i class="fa-solid fa-bookmark"></i><span>Saved</span>
                     <span class="nav-badge" style="background:rgba(167,139,250,0.2);color:var(--purple);">7</span>
                 </li>
             </ul>
@@ -1644,22 +2391,18 @@
         <div class="nav-section">
             <p class="nav-section-label">Library</p>
             <ul>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-id-card"></i>
-                    <span>My Library Card</span>
+                <li class="nav-item" onclick="navigate('library-card',this)">
+                    <i class="fa-solid fa-id-card"></i><span>My Library Card</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-indian-rupee-sign"></i>
-                    <span>Fines & Dues</span>
+                <li class="nav-item" onclick="navigate('fines',this)">
+                    <i class="fa-solid fa-indian-rupee-sign"></i><span>Fines &amp; Dues</span>
                     <span class="nav-badge warn">₹40</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-rotate"></i>
-                    <span>Renew Books</span>
+                <li class="nav-item" onclick="navigate('renew',this)">
+                    <i class="fa-solid fa-rotate"></i><span>Renew Books</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-regular fa-bell"></i>
-                    <span>Notifications</span>
+                <li class="nav-item" onclick="navigate('notifications',this)">
+                    <i class="fa-regular fa-bell"></i><span>Notifications</span>
                     <span class="nav-badge error">2</span>
                 </li>
             </ul>
@@ -1668,153 +2411,378 @@
         <div class="nav-section">
             <p class="nav-section-label">Account</p>
             <ul>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-user"></i>
-                    <span>My Profile</span>
+                <li class="nav-item" onclick="navigate('profile',this)">
+                    <i class="fa-solid fa-user"></i><span>My Profile</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Settings</span>
+                <li class="nav-item" onclick="navigate('settings',this)">
+                    <i class="fa-solid fa-gear"></i><span>Settings</span>
                 </li>
-                <li class="nav-item" onclick="setActive(this)">
-                    <i class="fa-solid fa-circle-question"></i>
-                    <span>Help & Support</span>
+                <li class="nav-item" onclick="navigate('help',this)">
+                    <i class="fa-solid fa-circle-question"></i><span>Help &amp; Support</span>
                 </li>
             </ul>
         </div>
 
-        <!-- Logout -->
-<div class="sidebar-footer">
-            <a href="{% url 'logout' %}" class="nav-item">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Log Out</span>
-            </a>
+        <div class="sidebar-footer">
+            <div class="nav-item"
+                onclick="showToast('Logging out…','info');setTimeout(()=>showToast('Goodbye,{{full_name}} ','success'),1000)">
+                <a href="{% url 'logout' %}" class="nav-item">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </a>
         </div>
-
     </aside>
 
-    <!-- Mobile sidebar overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-    <!-- ============================================================
-       MAIN AREA
-  ============================================================ -->
+    <!-- MAIN -->
     <div class="main">
-
-        <!-- TOPBAR -->
         <header class="topbar">
             <div class="topbar-left">
-                <!-- Hamburger -->
                 <div class="hamburger" onclick="toggleSidebar()">
                     <span></span><span></span><span></span>
                 </div>
-
                 <div class="page-breadcrumb">
                     <i class="fa-solid fa-house" style="font-size:0.75rem;"></i>
                     <i class="fa-solid fa-chevron-right" style="font-size:0.6rem;"></i>
-                    <span class="current">Dashboard</span>
+                    <span class="current" id="breadcrumbLabel">Dashboard</span>
                 </div>
             </div>
-
-            <!-- Search -->
             <div class="topbar-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="Search books, authors…" id="globalSearch" />
             </div>
-
             <div class="topbar-right">
-                <!-- Notification bell -->
                 <div class="icon-btn" onclick="toggleNotif()" title="Notifications">
                     <i class="fa-regular fa-bell"></i>
                     <span class="notif-dot"></span>
                 </div>
-
-                <!-- Topbar avatar -->
-                <div class="topbar-avatar" title="My Profile"></div>
+                <div class="topbar-avatar" title="My Profile" onclick="navigate('profile',null)">
+                <div class="topbar-avatar">
+                    {% if photo %}
+                    <img src="{{ photo.url }}" alt="Profile Photo">
+                    {% else %}
+                    <span>{{ full_name|slice:":1" }}</span>
+                    {% endif %}
+                </div>
+                </div>
             </div>
         </header>
 
-        <!-- PAGE CONTENT -->
         <div class="content">
 
-            <!-- WELCOME BANNER -->
-            <div class="welcome-banner">
-                <div class="welcome-text">
-                    <p class="greeting"> {{greeting}} </p>
-                    <h1>Welcome back, <span class="accent"> {{ request.user.first_name }} {{ request.user.last_name}} </span>!</h1>
-                    <p>You have <strong style="color:var(--warn);">3 books</strong> borrowed and <strong
-                            style="color:var(--error);">1 overdue</strong>. Stay on track!</p>
-                </div>
-                <div class="welcome-actions">
-                    <button class="btn-sm btn-accent">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search Books
-                    </button>
-                    <button class="btn-sm btn-glass">
-                        <i class="fa-solid fa-rotate"></i> Renew All
-                    </button>
-                </div>
-            </div>
-
-            <!-- STATS GRID -->
-            <div class="stats-grid">
-
-                <div class="stat-card">
-                    <div class="stat-icon ic-blue">
-                        <i class="fa-solid fa-book-open"></i>
+            <!-- ======== DASHBOARD ======== -->
+            <div class="page-section active" id="sec-dashboard">
+                <div class="welcome-banner">
+                    <div class="welcome-text">
+                        <p class="greeting">GOOD MORNING ☀️</p>
+                        <h1>Welcome back, <span class="accent">{{full_name}} </span>!</h1>
+                        <p>You have <strong style="color:var(--warn);">3 books</strong> borrowed and <strong
+                                style="color:var(--error);">1 overdue</strong>. Stay on track!</p>
                     </div>
-                    <div class="stat-body">
-                        <div class="stat-num">3</div>
-                        <div class="stat-label">Books Borrowed</div>
-                        <span class="stat-sub info"><i class="fa-solid fa-circle-info"></i> 2-book limit left</span>
+                    <div class="welcome-actions">
+                        <button class="btn-sm btn-accent" onclick="navigate('search-books',null)"><i
+                                class="fa-solid fa-magnifying-glass"></i> Search Books</button>
+                        <button class="btn-sm btn-glass" onclick="navigate('renew',null)"><i
+                                class="fa-solid fa-rotate"></i> Renew All</button>
                     </div>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon ic-green">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                    </div>
-                    <div class="stat-body">
-                        <div class="stat-num">24</div>
-                        <div class="stat-label">Total Books Read</div>
-                        <span class="stat-sub ok"><i class="fa-solid fa-arrow-up"></i> +3 this month</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon ic-amber">
-                        <i class="fa-solid fa-indian-rupee-sign"></i>
-                    </div>
-                    <div class="stat-body">
-                        <div class="stat-num">₹40</div>
-                        <div class="stat-label">Outstanding Fine</div>
-                        <span class="stat-sub bad"><i class="fa-solid fa-triangle-exclamation"></i> Overdue fine</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon ic-purple">
-                        <i class="fa-solid fa-bookmark"></i>
-                    </div>
-                    <div class="stat-body">
-                        <div class="stat-num">7</div>
-                        <div class="stat-label">Books Saved</div>
-                        <span class="stat-sub ok"><i class="fa-solid fa-circle-check"></i> 2 available now</span>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ROW 1: Borrowed Books (wide) + Quick Actions (narrow) -->
-            <div class="three-col">
-
-                <!-- BORROWED BOOKS TABLE -->
-                <div class="section-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fa-solid fa-book-open"></i>
-                            Currently Borrowed
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon ic-blue"><i class="fa-solid fa-book-open"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-num">3</div>
+                            <div class="stat-label">Books Borrowed</div>
+                            <span class="stat-sub info"><i class="fa-solid fa-circle-info"></i> 2-book limit left</span>
                         </div>
-                        <a class="card-action">View All →</a>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon ic-green"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-num">24</div>
+                            <div class="stat-label">Total Books Read</div>
+                            <span class="stat-sub ok"><i class="fa-solid fa-arrow-up"></i> +3 this month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon ic-amber"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-num">₹40</div>
+                            <div class="stat-label">Outstanding Fine</div>
+                            <span class="stat-sub bad"><i class="fa-solid fa-triangle-exclamation"></i> Overdue
+                                fine</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon ic-purple"><i class="fa-solid fa-bookmark"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-num">7</div>
+                            <div class="stat-label">Books Saved</div>
+                            <span class="stat-sub ok"><i class="fa-solid fa-circle-check"></i> 2 available now</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="three-col">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-book-open"></i>Currently Borrowed</div>
+                            <a class="card-action" onclick="navigate('my-books',null)">View All →</a>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="books-table">
+                                <thead>
+                                    <tr>
+                                        <th>Book</th>
+                                        <th>Issue Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="book-info">
+                                                <div class="book-thumb" style="background:rgba(37,99,235,0.12);">📘
+                                                </div>
+                                                <div class="book-details">
+                                                    <div class="book-title">Data Structures & Algorithms</div>
+                                                    <div class="book-author">Thomas H. Cormen</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-size:0.82rem;color:var(--text-muted);">Apr 10, 2025</td>
+                                        <td><span class="due-date overdue"><i class="fa-solid fa-triangle-exclamation"
+                                                    style="font-size:0.7rem;"></i> Apr 24 (Overdue)</span></td>
+                                        <td><span class="badge badge-error"><i class="fa-solid fa-circle-xmark"></i>
+                                                Overdue</span></td>
+                                        <td><button class="tbl-btn tbl-btn-danger"
+                                                onclick="showToast('Return request submitted!','error')">Return</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="book-info">
+                                                <div class="book-thumb" style="background:rgba(52,211,153,0.1);">📗
+                                                </div>
+                                                <div class="book-details">
+                                                    <div class="book-title">Engineering Mathematics Vol. II</div>
+                                                    <div class="book-author">B.S. Grewal</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-size:0.82rem;color:var(--text-muted);">Apr 15, 2025</td>
+                                        <td><span class="due-date soon"><i class="fa-regular fa-clock"
+                                                    style="font-size:0.7rem;"></i> Apr 29 (3 days)</span></td>
+                                        <td><span class="badge badge-warn"><i class="fa-solid fa-clock"></i> Due
+                                                Soon</span></td>
+                                        <td><button class="tbl-btn tbl-btn-primary"
+                                                onclick="showToast('Book renewed for 14 days!','success')">Renew</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="book-info">
+                                                <div class="book-thumb" style="background:rgba(167,139,250,0.1);">📙
+                                                </div>
+                                                <div class="book-details">
+                                                    <div class="book-title">Computer Networks</div>
+                                                    <div class="book-author">Andrew S. Tanenbaum</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="font-size:0.82rem;color:var(--text-muted);">Apr 20, 2025</td>
+                                        <td><span class="due-date safe">May 04, 2025</span></td>
+                                        <td><span class="badge badge-ok"><i class="fa-solid fa-circle-check"></i>
+                                                Active</span></td>
+                                        <td><button class="tbl-btn tbl-btn-primary"
+                                                onclick="showToast('Book renewed for 14 days!','success')">Renew</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                        <div class="section-card">
+                            <div class="card-header">
+                                <div class="card-title"><i class="fa-solid fa-id-card"></i>Library Card</div>
+                                <span class="badge badge-ok"><i class="fa-solid fa-circle"></i> Active</span>
+                            </div>
+                            <div class="lib-card">
+                                <div class="lib-card-top">
+                                    <div class="lib-card-logo"><strong>GPCUL</strong>Govt. Polytechnic
+                                        College<br>Udhampur</div>
+                                    <div class="lib-card-chip"></div>
+                                </div>
+                                <div class="lib-card-middle">
+                                    <div class="lib-card-avatar">
+                                        {% if photo %}
+                                        <img src="{{ photo.url }}" alt="Profile Photo">
+                                        {% else %}
+                                        <span>{{ full_name|slice:":1" }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="lib-card-name">{{full_name}} </div>
+                                        <div class="lib-card-enroll">{{enrollment}} </div>
+                                        <div class="lib-card-course">{{course}} </div>
+                                    </div>
+                                </div>
+                                <div class="lib-card-bottom">
+                                    <div>
+                                        <div class="lib-card-id">CARD NO: LIB-2023-0047</div>
+                                        <div class="lib-card-valid" style="margin-top:4px;">Valid till: <span>March
+                                                2026</span></div>
+                                    </div>
+                                    <div class="qr-block">
+                                        <div class="qr-inner"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="card-download-btn"
+                                onclick="showToast('Library card downloaded!','success')"><i
+                                    class="fa-solid fa-download"></i> Download Card</button>
+                        </div>
+                        <div class="section-card">
+                            <div class="card-header">
+                                <div class="card-title"><i class="fa-solid fa-indian-rupee-sign"></i>Outstanding Fine
+                                </div>
+                            </div>
+                            <div class="fine-alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                <div class="fine-alert-body">
+                                    <div class="fine-alert-title">₹40.00 Fine Pending</div>
+                                    <div class="fine-alert-text">"Data Structures & Algorithms" is 2 days overdue.
+                                        ₹20/day fine applies.</div>
+                                    <button class="fine-pay-btn" onclick="navigate('fines',null)"><i
+                                            class="fa-solid fa-credit-card"></i> Pay Fine Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i>Recent Reading History
+                            </div>
+                            <a class="card-action" onclick="navigate('history',null)">See All →</a>
+                        </div>
+                        <div class="history-list">
+                            <div class="history-item">
+                                <div class="history-book-thumb" style="background:rgba(37,99,235,0.1);">📘</div>
+                                <div class="history-info">
+                                    <div class="history-title">Introduction to Algorithms</div>
+                                    <div class="history-meta">Returned · 14 days borrowed</div>
+                                </div>
+                                <div class="history-date">Apr 08</div>
+                            </div>
+                            <div class="history-item">
+                                <div class="history-book-thumb" style="background:rgba(240,165,0,0.1);">📙</div>
+                                <div class="history-info">
+                                    <div class="history-title">Digital Electronics</div>
+                                    <div class="history-meta">Returned · 10 days borrowed</div>
+                                </div>
+                                <div class="history-date">Mar 28</div>
+                            </div>
+                            <div class="history-item">
+                                <div class="history-book-thumb" style="background:rgba(52,211,153,0.1);">📗</div>
+                                <div class="history-info">
+                                    <div class="history-title">Fluid Mechanics — R.K. Bansal</div>
+                                    <div class="history-meta">Returned · 7 days borrowed</div>
+                                </div>
+                                <div class="history-date">Mar 15</div>
+                            </div>
+                            <div class="history-item">
+                                <div class="history-book-thumb" style="background:rgba(167,139,250,0.1);">📕</div>
+                                <div class="history-info">
+                                    <div class="history-title">Electrical Circuit Analysis</div>
+                                    <div class="history-meta">Returned · 12 days borrowed</div>
+                                </div>
+                                <div class="history-date">Feb 22</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                        <div class="section-card">
+                            <div class="card-header">
+                                <div class="card-title"><i class="fa-solid fa-bullhorn"></i>Announcements</div><a
+                                    class="card-action">All →</a>
+                            </div>
+                            <div>
+                                <div class="announcement-item">
+                                    <div class="ann-dot blue"></div>
+                                    <div class="ann-body">
+                                        <div class="ann-title">Library closed on May 1st – Labour Day</div>
+                                        <div class="ann-text">No issue/return services on the public holiday.</div>
+                                    </div>
+                                    <div class="ann-date">Today</div>
+                                </div>
+                                <div class="announcement-item">
+                                    <div class="ann-dot amber"></div>
+                                    <div class="ann-body">
+                                        <div class="ann-title">New arrivals: 50+ Engineering books</div>
+                                        <div class="ann-text">Semester 4 & 5 reference books now available.</div>
+                                    </div>
+                                    <div class="ann-date">Apr 24</div>
+                                </div>
+                                <div class="announcement-item">
+                                    <div class="ann-dot green"></div>
+                                    <div class="ann-body">
+                                        <div class="ann-title">Fine waiver week – April 28–30</div>
+                                        <div class="ann-text">Return all overdue books, fines will be waived.</div>
+                                    </div>
+                                    <div class="ann-date">Apr 22</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-card">
+                            <div class="card-header">
+                                <div class="card-title"><i class="fa-solid fa-bolt"></i>Quick Actions</div>
+                            </div>
+                            <div class="quick-actions">
+                                <div class="qa-btn" onclick="navigate('search-books',null)">
+                                    <div class="qa-icon ic-blue"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                    <div class="qa-label">Search Books</div>
+                                </div>
+                                <div class="qa-btn" onclick="navigate('renew',null)">
+                                    <div class="qa-icon ic-green"><i class="fa-solid fa-rotate"></i></div>
+                                    <div class="qa-label">Renew Books</div>
+                                </div>
+                                <div class="qa-btn" onclick="navigate('library-card',null)">
+                                    <div class="qa-icon ic-amber"><i class="fa-solid fa-id-card"></i></div>
+                                    <div class="qa-label">Library Card</div>
+                                </div>
+                                <div class="qa-btn" onclick="navigate('fines',null)">
+                                    <div class="qa-icon ic-red"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                                    <div class="qa-label">Pay Fine</div>
+                                </div>
+                                <div class="qa-btn" onclick="navigate('saved',null)">
+                                    <div class="qa-icon ic-purple"><i class="fa-solid fa-bookmark"></i></div>
+                                    <div class="qa-label">Saved Books</div>
+                                </div>
+                                <div class="qa-btn" onclick="navigate('help',null)">
+                                    <div class="qa-icon"
+                                        style="background:rgba(136,146,176,0.12);color:var(--text-muted);"><i
+                                            class="fa-solid fa-headset"></i></div>
+                                    <div class="qa-label">Get Help</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== MY BOOKS ======== -->
+            <div class="page-section" id="sec-my-books">
+                <div class="page-heading">
+                    <h2>My Books</h2>
+                    <p>All books currently issued to you</p>
+                </div>
+                <div class="section-card" style="margin-bottom:1.25rem;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-book-open"></i>Currently Borrowed (3)</div>
                     </div>
                     <div style="overflow-x:auto;">
                         <table class="books-table">
@@ -1824,6 +2792,7 @@
                                     <th>Issue Date</th>
                                     <th>Due Date</th>
                                     <th>Status</th>
+                                    <th>Renewals</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -1834,7 +2803,8 @@
                                             <div class="book-thumb" style="background:rgba(37,99,235,0.12);">📘</div>
                                             <div class="book-details">
                                                 <div class="book-title">Data Structures & Algorithms</div>
-                                                <div class="book-author">Thomas H. Cormen</div>
+                                                <div class="book-author">Thomas H. Cormen · ISBN: 978-0-262-03384-8
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -1843,9 +2813,9 @@
                                                 style="font-size:0.7rem;"></i> Apr 24 (Overdue)</span></td>
                                     <td><span class="badge badge-error"><i class="fa-solid fa-circle-xmark"></i>
                                             Overdue</span></td>
-                                    <td>
-                                        <button class="tbl-btn tbl-btn-danger"
-                                            onclick="showToast('Return request submitted!', 'error')">Return</button>
+                                    <td style="font-size:0.8rem;color:var(--text-muted);">0 / 2</td>
+                                    <td><button class="tbl-btn tbl-btn-danger"
+                                            onclick="showToast('Return request submitted!','error')">Return</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1854,7 +2824,7 @@
                                             <div class="book-thumb" style="background:rgba(52,211,153,0.1);">📗</div>
                                             <div class="book-details">
                                                 <div class="book-title">Engineering Mathematics Vol. II</div>
-                                                <div class="book-author">B.S. Grewal</div>
+                                                <div class="book-author">B.S. Grewal · ISBN: 978-81-219-2549-5</div>
                                             </div>
                                         </div>
                                     </td>
@@ -1863,9 +2833,9 @@
                                                 style="font-size:0.7rem;"></i> Apr 29 (3 days)</span></td>
                                     <td><span class="badge badge-warn"><i class="fa-solid fa-clock"></i> Due Soon</span>
                                     </td>
-                                    <td>
-                                        <button class="tbl-btn tbl-btn-primary"
-                                            onclick="showToast('Book renewed for 14 days!', 'success')">Renew</button>
+                                    <td style="font-size:0.8rem;color:var(--text-muted);">1 / 2</td>
+                                    <td><button class="tbl-btn tbl-btn-primary"
+                                            onclick="showToast('Book renewed for 14 days!','success')">Renew</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1874,7 +2844,8 @@
                                             <div class="book-thumb" style="background:rgba(167,139,250,0.1);">📙</div>
                                             <div class="book-details">
                                                 <div class="book-title">Computer Networks</div>
-                                                <div class="book-author">Andrew S. Tanenbaum</div>
+                                                <div class="book-author">Andrew S. Tanenbaum · ISBN: 978-0-13-212695-3
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -1882,279 +2853,965 @@
                                     <td><span class="due-date safe">May 04, 2025</span></td>
                                     <td><span class="badge badge-ok"><i class="fa-solid fa-circle-check"></i>
                                             Active</span></td>
-                                    <td>
-                                        <button class="tbl-btn tbl-btn-primary"
-                                            onclick="showToast('Book renewed for 14 days!', 'success')">Renew</button>
+                                    <td style="font-size:0.8rem;color:var(--text-muted);">0 / 2</td>
+                                    <td><button class="tbl-btn tbl-btn-primary"
+                                            onclick="showToast('Book renewed for 14 days!','success')">Renew</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-rotate-left"></i>Pending Returns</div>
+                    </div>
+                    <div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.875rem;">No pending
+                        return requests.</div>
+                </div>
+            </div>
 
-                <!-- RIGHT COLUMN: Library Card + Quick Actions -->
-                <div style="display:flex;flex-direction:column;gap:1.25rem;">
-
-                    <!-- LIBRARY CARD -->
-                    <div class="section-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-id-card"></i>
-                                Library Card
-                            </div>
-                            <span class="badge badge-ok"><i class="fa-solid fa-circle"></i> Active</span>
+            <!-- ======== SEARCH BOOKS ======== -->
+            <div class="page-section" id="sec-search-books">
+                <div class="page-heading">
+                    <h2>Search Books</h2>
+                    <p>Explore the entire GPCUL catalogue</p>
+                </div>
+                <div class="search-bar-big">
+                    <input type="text" id="searchInput" placeholder="Search by title, author, ISBN, subject…" />
+                    <button onclick="showToast('Searching catalogue…','info')"><i
+                            class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </div>
+                <div class="search-filters">
+                    <div class="filter-pill active">All</div>
+                    <div class="filter-pill">Computer Science</div>
+                    <div class="filter-pill">Mathematics</div>
+                    <div class="filter-pill">Electronics</div>
+                    <div class="filter-pill">Mechanical</div>
+                    <div class="filter-pill">Civil</div>
+                    <div class="filter-pill">Physics</div>
+                    <div class="filter-pill">Reference</div>
+                </div>
+                <div class="book-grid">
+                    <div class="book-card">
+                        <div class="book-card-cover" style="background:rgba(37,99,235,0.08);">📘</div>
+                        <div class="book-card-body">
+                            <div class="book-card-title">Operating System Concepts</div>
+                            <div class="book-card-author">Silberschatz, Galvin</div>
+                            <div class="book-card-meta"><span class="availability avail-yes"><i
+                                        class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
+                                    Available</span><button class="borrow-btn"
+                                    onclick="showToast('Book reserved!','success')">Borrow</button></div>
                         </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-card-cover" style="background:rgba(52,211,153,0.08);">📗</div>
+                        <div class="book-card-body">
+                            <div class="book-card-title">Discrete Mathematics</div>
+                            <div class="book-card-author">Kenneth H. Rosen</div>
+                            <div class="book-card-meta"><span class="availability avail-yes"><i
+                                        class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
+                                    Available</span><button class="borrow-btn"
+                                    onclick="showToast('Book reserved!','success')">Borrow</button></div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-card-cover" style="background:rgba(240,165,0,0.08);">📙</div>
+                        <div class="book-card-body">
+                            <div class="book-card-title">Theory of Automata</div>
+                            <div class="book-card-author">J.C. Martin</div>
+                            <div class="book-card-meta"><span class="availability avail-no"><i
+                                        class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Issued</span><button
+                                    class="borrow-btn" style="opacity:0.4;cursor:not-allowed;">Reserve</button></div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-card-cover" style="background:rgba(167,139,250,0.08);">📕</div>
+                        <div class="book-card-body">
+                            <div class="book-card-title">Database Management Systems</div>
+                            <div class="book-card-author">Raghu Ramakrishnan</div>
+                            <div class="book-card-meta"><span class="availability avail-yes"><i
+                                        class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
+                                    Available</span><button class="borrow-btn"
+                                    onclick="showToast('Book reserved!','success')">Borrow</button></div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-card-cover" style="background:rgba(248,113,113,0.08);">📔</div>
+                        <div class="book-card-body">
+                            <div class="book-card-title">Software Engineering</div>
+                            <div class="book-card-author">Roger Pressman</div>
+                            <div class="book-card-meta"><span class="availability avail-yes"><i
+                                        class="fa-solid fa-circle" style="font-size:0.5rem;"></i>
+                                    Available</span><button class="borrow-btn"
+                                    onclick="showToast('Book reserved!','success')">Borrow</button></div>
+                        </div>
+                    </div>
+                    <div class="book-card">
+                        <div class="book-card-cover" style="background:rgba(96,165,250,0.08);">📒</div>
+                        <div class="book-card-body">
+                            <div class="book-card-title">Computer Architecture</div>
+                            <div class="book-card-author">John L. Hennessy</div>
+                            <div class="book-card-meta"><span class="availability avail-no"><i
+                                        class="fa-solid fa-circle" style="font-size:0.5rem;"></i> Issued</span><button
+                                    class="borrow-btn" style="opacity:0.4;cursor:not-allowed;">Reserve</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="lib-card">
-                            <div class="lib-card-top">
-                                <div class="lib-card-logo">
-                                    <strong>GPCUL</strong>
-                                    Govt. Polytechnic College<br />Udhampur
-                                </div>
-                                <div class="lib-card-chip"></div>
+            <!-- ======== HISTORY ======== -->
+            <div class="page-section" id="sec-history">
+                <div class="page-heading">
+                    <h2>Reading History</h2>
+                    <p>Complete borrowing history from this academic year</p>
+                </div>
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i>All Borrowings (24 total)
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="books-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Borrowed On</th>
+                                    <th>Returned On</th>
+                                    <th>Duration</th>
+                                    <th>Fine Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-thumb" style="background:rgba(37,99,235,0.12);">📘</div>
+                                            <div class="book-details">
+                                                <div class="book-title">Introduction to Algorithms</div>
+                                                <div class="book-author">Thomas H. Cormen</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Mar 25, 2025</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Apr 08, 2025</td>
+                                    <td><span class="badge badge-ok">14 days</span></td>
+                                    <td style="color:var(--success);font-size:0.82rem;">₹0</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-thumb" style="background:rgba(240,165,0,0.1);">📙</div>
+                                            <div class="book-details">
+                                                <div class="book-title">Digital Electronics</div>
+                                                <div class="book-author">Morris Mano</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Mar 18, 2025</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Mar 28, 2025</td>
+                                    <td><span class="badge badge-ok">10 days</span></td>
+                                    <td style="color:var(--error);font-size:0.82rem;">₹20</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-thumb" style="background:rgba(52,211,153,0.1);">📗</div>
+                                            <div class="book-details">
+                                                <div class="book-title">Fluid Mechanics</div>
+                                                <div class="book-author">R.K. Bansal</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Mar 08, 2025</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Mar 15, 2025</td>
+                                    <td><span class="badge badge-ok">7 days</span></td>
+                                    <td style="color:var(--success);font-size:0.82rem;">₹0</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-thumb" style="background:rgba(167,139,250,0.1);">📕</div>
+                                            <div class="book-details">
+                                                <div class="book-title">Electrical Circuit Analysis</div>
+                                                <div class="book-author">A. Chakrabarti</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Feb 10, 2025</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Feb 22, 2025</td>
+                                    <td><span class="badge badge-ok">12 days</span></td>
+                                    <td style="color:var(--success);font-size:0.82rem;">₹0</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-thumb" style="background:rgba(248,113,113,0.1);">📔</div>
+                                            <div class="book-details">
+                                                <div class="book-title">Strength of Materials</div>
+                                                <div class="book-author">R.K. Rajput</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Feb 01, 2025</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Feb 10, 2025</td>
+                                    <td><span class="badge badge-ok">9 days</span></td>
+                                    <td style="color:var(--success);font-size:0.82rem;">₹0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== SAVED ======== -->
+            <div class="page-section" id="sec-saved">
+                <div class="page-heading">
+                    <h2>Saved Books</h2>
+                    <p>Books you've bookmarked for later reading</p>
+                </div>
+                <div class="saved-grid">
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(37,99,235,0.1);">📘</div>
+                        <div class="saved-info">
+                            <div class="saved-title">Operating System Concepts</div>
+                            <div class="saved-author">Silberschatz, Galvin</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(52,211,153,0.1);">📗</div>
+                        <div class="saved-info">
+                            <div class="saved-title">Discrete Mathematics</div>
+                            <div class="saved-author">Kenneth H. Rosen</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(240,165,0,0.1);">📙</div>
+                        <div class="saved-info">
+                            <div class="saved-title">Theory of Computation</div>
+                            <div class="saved-author">Michael Sipser</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(167,139,250,0.1);">📕</div>
+                        <div class="saved-info">
+                            <div class="saved-title">DBMS — Navathe</div>
+                            <div class="saved-author">Elmasri & Navathe</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(248,113,113,0.1);">📔</div>
+                        <div class="saved-info">
+                            <div class="saved-title">Software Engineering</div>
+                            <div class="saved-author">Roger Pressman</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(96,165,250,0.1);">📒</div>
+                        <div class="saved-info">
+                            <div class="saved-title">Computer Architecture</div>
+                            <div class="saved-author">John L. Hennessy</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                    <div class="saved-card">
+                        <div class="saved-thumb" style="background:rgba(167,139,250,0.1);">📓</div>
+                        <div class="saved-info">
+                            <div class="saved-title">Artificial Intelligence</div>
+                            <div class="saved-author">Stuart Russell</div>
+                            <div class="saved-actions"><button class="borrow-btn"
+                                    onclick="showToast('Book requested!','success')">Borrow</button><button
+                                    class="unsave-btn" onclick="showToast('Removed from saved','error')"><i
+                                        class="fa-solid fa-bookmark-slash"></i></button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== LIBRARY CARD ======== -->
+            <div class="page-section" id="sec-library-card">
+                <div class="page-heading">
+                    <h2>My Library Card</h2>
+                    <p>Your digital library membership card</p>
+                </div>
+                <div class="lib-card-page">
+                    <div class="lib-card-full">
+                        <div class="lib-card-top">
+                            <div class="lib-card-logo"><strong>GPCUL</strong>Govt. Polytechnic College<br>Udhampur, J&K
                             </div>
-                            <div class="lib-card-middle">
-                                <div class="lib-card-avatar">RS</div>
-                                <div>
-                                    <div class="lib-card-name">{{ request.user.first_name }} {{ request.user.last_name }} </div>
-<div class="lib-card-enroll">{{ enrollment|default:"N/A" }}</div>
-                                    <div class="lib-card-course">{{ course|default:"N/A" }} · {{ semester|default:"N/A" }}</div>
-                                </div>
+                            <div class="lib-card-chip"></div>
+                        </div>
+                        <div style="text-align:center;position:relative;z-index:1;">
+                            <div class="lib-card-avatar">
+                                {% if photo %}
+                                <img src="{{ photo.url }}" alt="Profile Photo">
+                                {% else %}
+                                {{ request.user.first_name|slice:":1" }}
+                                {% endif %}
                             </div>
-                            <div class="lib-card-bottom">
-                                <div>
-                                    <div class="lib-card-id">CARD NO: LIB-2023-0047</div>
-                                    <div class="lib-card-valid" style="margin-top:4px;">Valid till: <span>March
-                                            2026</span></div>
-                                </div>
-                                <div class="qr-block">
+                            <div
+                                style="font-family:var(--font-display);font-size:1.5rem;color:var(--white);font-weight:700;">
+                                Rahul Sharma</div>
+                            <div style="font-size:0.8rem;color:rgba(255,255,255,0.55);margin-top:4px;">Enrollment:
+                                CE/22/101</div>
+                            <div style="font-size:0.82rem;color:var(--accent);margin-top:2px;">B.Tech Computer
+                                Engineering · Semester 5</div>
+                            <div style="margin:1.25rem 0;display:flex;justify-content:center;">
+                                <div class="qr-block" style="width:80px;height:80px;">
                                     <div class="qr-inner"></div>
                                 </div>
                             </div>
+                            <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);letter-spacing:0.12em;">CARD NO:
+                                LIB-2023-0047</div>
+                            <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:4px;">Valid: July 2023 –
+                                <span style="color:rgba(255,255,255,0.7);font-weight:600;">March 2026</span></div>
                         </div>
-
-                        <button class="card-download-btn" onclick="showToast('Library card downloaded!', 'success')">
-                            <i class="fa-solid fa-download"></i> Download Card
-                        </button>
                     </div>
-
-                    <!-- FINE ALERT -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+                        <button class="btn-primary"
+                            style="display:flex;align-items:center;justify-content:center;gap:0.5rem;"
+                            onclick="showToast('Card downloaded as PDF!','success')"><i
+                                class="fa-solid fa-download"></i> Download PDF</button>
+                        <button class="btn-outline"
+                            style="display:flex;align-items:center;justify-content:center;gap:0.5rem;"
+                            onclick="showToast('Card image saved!','success')"><i class="fa-solid fa-image"></i> Save as
+                            Image</button>
+                    </div>
                     <div class="section-card">
                         <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-indian-rupee-sign"></i>
-                                Outstanding Fine
-                            </div>
+                            <div class="card-title"><i class="fa-solid fa-circle-info"></i>Card Details</div>
                         </div>
-                        <div class="fine-alert">
-                            <i class="fa-solid fa-circle-exclamation"></i>
-                            <div class="fine-alert-body">
-                                <div class="fine-alert-title">₹40.00 Fine Pending</div>
-                                <div class="fine-alert-text">
-                                    "Data Structures & Algorithms" is 2 days overdue. ₹20/day fine applies.
-                                </div>
-                                <button class="fine-pay-btn" onclick="showToast('Redirecting to payment…', 'info')">
-                                    <i class="fa-solid fa-credit-card"></i> Pay Fine Now
-                                </button>
+                        <div style="padding:1.25rem;">
+                            <div style="display:grid;gap:0.75rem;">
+                                <div
+                                    style="display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);">
+                                    <span style="color:var(--text-muted);font-size:0.82rem;">Status</span><span
+                                        class="badge badge-ok"><i class="fa-solid fa-circle"></i> Active</span></div>
+                                <div
+                                    style="display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);">
+                                    <span style="color:var(--text-muted);font-size:0.82rem;">Books Limit</span><span
+                                        style="font-size:0.82rem;color:var(--white);">5 books max</span></div>
+                                <div
+                                    style="display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);">
+                                    <span style="color:var(--text-muted);font-size:0.82rem;">Loan Period</span><span
+                                        style="font-size:0.82rem;color:var(--white);">14 days</span></div>
+                                <div
+                                    style="display:flex;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border);">
+                                    <span style="color:var(--text-muted);font-size:0.82rem;">Max Renewals</span><span
+                                        style="font-size:0.82rem;color:var(--white);">2 per book</span></div>
+                                <div style="display:flex;justify-content:space-between;padding:0.65rem 0;"><span
+                                        style="color:var(--text-muted);font-size:0.82rem;">Fine Rate</span><span
+                                        style="font-size:0.82rem;color:var(--error);">₹20 / day</span></div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- ROW 2: History + Announcements + Quick Actions -->
-            <div class="two-col">
+            <!-- ======== FINES ======== -->
+            <div class="page-section" id="sec-fines">
+                <div class="page-heading">
+                    <h2>Fines &amp; Dues</h2>
+                    <p>Manage your outstanding library fines</p>
+                </div>
+                <div class="fines-summary">
+                    <div class="fine-stat">
+                        <div class="fine-stat-num" style="color:var(--error);">₹40</div>
+                        <div class="fine-stat-label">Current Outstanding</div>
+                    </div>
+                    <div class="fine-stat">
+                        <div class="fine-stat-num" style="color:var(--warn);">₹20</div>
+                        <div class="fine-stat-label">Paid This Month</div>
+                    </div>
+                    <div class="fine-stat">
+                        <div class="fine-stat-num" style="color:var(--success);">₹60</div>
+                        <div class="fine-stat-label">Total Paid (All Time)</div>
+                    </div>
+                </div>
+                <div class="fines-table-wrap" style="margin-bottom:1.25rem;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-triangle-exclamation"></i>Outstanding Fines</div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="books-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Overdue Since</th>
+                                    <th>Days Overdue</th>
+                                    <th>Fine Accrued</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="book-info">
+                                            <div class="book-thumb" style="background:rgba(248,113,113,0.1);">📘</div>
+                                            <div class="book-details">
+                                                <div class="book-title">Data Structures & Algorithms</div>
+                                                <div class="book-author">Due: Apr 24, 2025</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--error);">Apr 24, 2025</td>
+                                    <td><span class="badge badge-error">2 days</span></td>
+                                    <td style="color:var(--error);font-weight:700;">₹40.00</td>
+                                    <td><button class="pay-btn"
+                                            onclick="showToast('Redirecting to payment gateway…','info')"><i
+                                                class="fa-solid fa-credit-card"></i> Pay Now</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="fines-table-wrap">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i>Payment History</div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="books-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Fine Amount</th>
+                                    <th>Paid On</th>
+                                    <th>Mode</th>
+                                    <th>Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="book-details">
+                                            <div class="book-title">Digital Electronics</div>
+                                            <div class="book-author">1 day overdue</div>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--warn);">₹20.00</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Mar 30, 2025</td>
+                                    <td><span class="badge badge-blue">Cash</span></td>
+                                    <td><button class="tbl-btn tbl-btn-primary"
+                                            onclick="showToast('Receipt downloaded!','success')"><i
+                                                class="fa-solid fa-download"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="book-details">
+                                            <div class="book-title">Engineering Drawing</div>
+                                            <div class="book-author">2 days overdue</div>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--warn);">₹40.00</td>
+                                    <td style="font-size:0.82rem;color:var(--text-muted);">Jan 15, 2025</td>
+                                    <td><span class="badge badge-blue">Cash</span></td>
+                                    <td><button class="tbl-btn tbl-btn-primary"
+                                            onclick="showToast('Receipt downloaded!','success')"><i
+                                                class="fa-solid fa-download"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-                <!-- READING HISTORY -->
+            <!-- ======== RENEW ======== -->
+            <div class="page-section" id="sec-renew">
+                <div class="page-heading">
+                    <h2>Renew Books</h2>
+                    <p>Extend borrowing period for your current books</p>
+                </div>
+                <div class="section-card"
+                    style="padding:1.25rem;margin-bottom:1rem;background:rgba(37,99,235,0.06);border-color:rgba(37,99,235,0.2);">
+                    <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.875rem;color:var(--text);">
+                        <i class="fa-solid fa-circle-info" style="color:var(--blue-light);"></i>
+                        Books can be renewed up to 2 times each. Overdue books cannot be renewed — return them first.
+                    </div>
+                </div>
+                <div class="renew-card">
+                    <div class="renew-book-icon" style="background:rgba(37,99,235,0.12);">📘</div>
+                    <div class="renew-info">
+                        <div class="renew-title">Data Structures & Algorithms</div>
+                        <div class="renew-author">Thomas H. Cormen</div>
+                        <div class="renew-due" style="color:var(--error);"><i class="fa-solid fa-triangle-exclamation"
+                                style="font-size:0.75rem;"></i> Overdue since Apr 24, 2025</div>
+                    </div>
+                    <div class="renew-actions">
+                        <div class="renew-count">Renewals: 0 / 2</div>
+                        <button class="tbl-btn tbl-btn-danger" style="opacity:0.5;cursor:not-allowed;" disabled>Cannot
+                            Renew</button>
+                    </div>
+                </div>
+                <div class="renew-card">
+                    <div class="renew-book-icon" style="background:rgba(52,211,153,0.1);">📗</div>
+                    <div class="renew-info">
+                        <div class="renew-title">Engineering Mathematics Vol. II</div>
+                        <div class="renew-author">B.S. Grewal</div>
+                        <div class="renew-due" style="color:var(--warn);"><i class="fa-regular fa-clock"
+                                style="font-size:0.75rem;"></i> Due Apr 29, 2025 (3 days left)</div>
+                    </div>
+                    <div class="renew-actions">
+                        <div class="renew-count">Renewals: 1 / 2</div>
+                        <button class="tbl-btn tbl-btn-primary"
+                            onclick="showToast('Renewed! New due date: May 13, 2025','success')"><i
+                                class="fa-solid fa-rotate"></i> Renew</button>
+                    </div>
+                </div>
+                <div class="renew-card">
+                    <div class="renew-book-icon" style="background:rgba(167,139,250,0.1);">📙</div>
+                    <div class="renew-info">
+                        <div class="renew-title">Computer Networks</div>
+                        <div class="renew-author">Andrew S. Tanenbaum</div>
+                        <div class="renew-due" style="color:var(--text-muted);"><i class="fa-solid fa-calendar"
+                                style="font-size:0.75rem;"></i> Due May 04, 2025</div>
+                    </div>
+                    <div class="renew-actions">
+                        <div class="renew-count">Renewals: 0 / 2</div>
+                        <button class="tbl-btn tbl-btn-primary"
+                            onclick="showToast('Renewed! New due date: May 18, 2025','success')"><i
+                                class="fa-solid fa-rotate"></i> Renew</button>
+                    </div>
+                </div>
+                <div style="margin-top:1rem;text-align:right;">
+                    <button class="btn-primary" onclick="showToast('All eligible books renewed!','success')"><i
+                            class="fa-solid fa-rotate"></i> Renew All Eligible</button>
+                </div>
+            </div>
+
+            <!-- ======== NOTIFICATIONS ======== -->
+            <div class="page-section" id="sec-notifications">
+                <div class="page-heading">
+                    <h2>Notifications</h2>
+                    <p>Alerts, reminders and library announcements</p>
+                </div>
                 <div class="section-card">
                     <div class="card-header">
-                        <div class="card-title">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-                            Recent Reading History
-                        </div>
-                        <a class="card-action">See All →</a>
+                        <div class="card-title"><i class="fa-regular fa-bell"></i>All Notifications</div>
+                        <span class="card-action" onclick="showToast('All marked as read','success')">Mark all
+                            read</span>
                     </div>
-                    <div class="history-list">
-                        <div class="history-item">
-                            <div class="history-book-thumb" style="background:rgba(37,99,235,0.1);">📘</div>
-                            <div class="history-info">
-                                <div class="history-title">Introduction to Algorithms</div>
-                                <div class="history-meta">Returned · 14 days borrowed</div>
+                    <div style="padding:0.5rem 1.5rem;">
+                        <div class="notif-page-item">
+                            <div class="notif-page-dot ic-amber"><i class="fa-solid fa-triangle-exclamation"
+                                    style="color:var(--warn);font-size:0.9rem;"></i></div>
+                            <div class="notif-page-body">
+                                <div class="notif-page-title">Book Overdue — Fine Accruing</div>
+                                <div class="notif-page-text">"Data Structures & Algorithms" was due Apr 24. Fine of ₹40
+                                    has accrued. Return immediately to stop further charges.</div>
+                                <div class="notif-page-time"><i class="fa-regular fa-clock"
+                                        style="font-size:0.65rem;"></i> 2 hours ago</div>
                             </div>
-                            <div class="history-date">Apr 08</div>
+                            <div class="unread-dot"></div>
                         </div>
-                        <div class="history-item">
-                            <div class="history-book-thumb" style="background:rgba(240,165,0,0.1);">📙</div>
-                            <div class="history-info">
-                                <div class="history-title">Digital Electronics</div>
-                                <div class="history-meta">Returned · 10 days borrowed</div>
+                        <div class="notif-page-item">
+                            <div class="notif-page-dot ic-blue"><i class="fa-solid fa-clock"
+                                    style="color:#60a5fa;font-size:0.9rem;"></i></div>
+                            <div class="notif-page-body">
+                                <div class="notif-page-title">Due Date Reminder</div>
+                                <div class="notif-page-text">"Engineering Mathematics Vol. II" is due in 3 days on Apr
+                                    29. Consider renewing if you still need it.</div>
+                                <div class="notif-page-time"><i class="fa-regular fa-clock"
+                                        style="font-size:0.65rem;"></i> Yesterday</div>
                             </div>
-                            <div class="history-date">Mar 28</div>
+                            <div class="unread-dot"></div>
                         </div>
-                        <div class="history-item">
-                            <div class="history-book-thumb" style="background:rgba(52,211,153,0.1);">📗</div>
-                            <div class="history-info">
-                                <div class="history-title">Fluid Mechanics — R.K. Bansal</div>
-                                <div class="history-meta">Returned · 7 days borrowed</div>
+                        <div class="notif-page-item">
+                            <div class="notif-page-dot ic-green"><i class="fa-solid fa-bullhorn"
+                                    style="color:var(--success);font-size:0.9rem;"></i></div>
+                            <div class="notif-page-body">
+                                <div class="notif-page-title">New Books Added to Catalogue</div>
+                                <div class="notif-page-text">50+ new engineering reference books for Semester 4 & 5 have
+                                    been added. Check Search Books to explore.</div>
+                                <div class="notif-page-time"><i class="fa-regular fa-clock"
+                                        style="font-size:0.65rem;"></i> Apr 24, 2025</div>
                             </div>
-                            <div class="history-date">Mar 15</div>
                         </div>
-                        <div class="history-item">
-                            <div class="history-book-thumb" style="background:rgba(167,139,250,0.1);">📕</div>
-                            <div class="history-info">
-                                <div class="history-title">Electrical Circuit Analysis</div>
-                                <div class="history-meta">Returned · 12 days borrowed</div>
+                        <div class="notif-page-item">
+                            <div class="notif-page-dot ic-purple"><i class="fa-solid fa-gift"
+                                    style="color:var(--purple);font-size:0.9rem;"></i></div>
+                            <div class="notif-page-body">
+                                <div class="notif-page-title">Fine Waiver Week Announced</div>
+                                <div class="notif-page-text">Return all overdue books between April 28–30 and all fines
+                                    will be waived. Don't miss this chance!</div>
+                                <div class="notif-page-time"><i class="fa-regular fa-clock"
+                                        style="font-size:0.65rem;"></i> Apr 22, 2025</div>
                             </div>
-                            <div class="history-date">Feb 22</div>
                         </div>
-                        <div class="history-item">
-                            <div class="history-book-thumb" style="background:rgba(248,113,113,0.1);">📔</div>
-                            <div class="history-info">
-                                <div class="history-title">Strength of Materials</div>
-                                <div class="history-meta">Returned · 9 days borrowed</div>
-                            </div>
-                            <div class="history-date">Feb 10</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ANNOUNCEMENTS + QUICK ACTIONS stacked -->
-                <div style="display:flex;flex-direction:column;gap:1.25rem;">
-
-                    <!-- ANNOUNCEMENTS -->
-                    <div class="section-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-bullhorn"></i>
-                                Announcements
-                            </div>
-                            <a class="card-action">All →</a>
-                        </div>
-                        <div>
-                            <div class="announcement-item">
-                                <div class="ann-dot blue"></div>
-                                <div class="ann-body">
-                                    <div class="ann-title">Library closed on May 1st – Labour Day</div>
-                                    <div class="ann-text">No issue/return services on the public holiday.</div>
-                                </div>
-                                <div class="ann-date">Today</div>
-                            </div>
-                            <div class="announcement-item">
-                                <div class="ann-dot amber"></div>
-                                <div class="ann-body">
-                                    <div class="ann-title">New arrivals: 50+ Engineering books</div>
-                                    <div class="ann-text">Semester 4 & 5 reference books now available.</div>
-                                </div>
-                                <div class="ann-date">Apr 24</div>
-                            </div>
-                            <div class="announcement-item">
-                                <div class="ann-dot green"></div>
-                                <div class="ann-body">
-                                    <div class="ann-title">Fine waiver week – April 28–30</div>
-                                    <div class="ann-text">Return all overdue books, fines will be waived.</div>
-                                </div>
-                                <div class="ann-date">Apr 22</div>
+                        <div class="notif-page-item">
+                            <div class="notif-page-dot ic-amber"><i class="fa-solid fa-id-card"
+                                    style="color:var(--accent);font-size:0.9rem;"></i></div>
+                            <div class="notif-page-body">
+                                <div class="notif-page-title">Library Card Renewed</div>
+                                <div class="notif-page-text">Your library membership has been renewed for academic year
+                                    2025–26. Valid till March 2026.</div>
+                                <div class="notif-page-time"><i class="fa-regular fa-clock"
+                                        style="font-size:0.65rem;"></i> Jan 10, 2025</div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- QUICK ACTIONS -->
-                    <div class="section-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-bolt"></i>
-                                Quick Actions
-                            </div>
-                        </div>
-                        <div class="quick-actions">
-                            <div class="qa-btn" onclick="showToast('Opening book search…', 'info')">
-                                <div class="qa-icon ic-blue"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                <div class="qa-label">Search Books</div>
-                            </div>
-                            <div class="qa-btn" onclick="showToast('Opening renewal page…', 'info')">
-                                <div class="qa-icon ic-green"><i class="fa-solid fa-rotate"></i></div>
-                                <div class="qa-label">Renew Books</div>
-                            </div>
-                            <div class="qa-btn" onclick="showToast('Library card downloaded!', 'success')">
-                                <div class="qa-icon ic-amber"><i class="fa-solid fa-id-card"></i></div>
-                                <div class="qa-label">Download Card</div>
-                            </div>
-                            <div class="qa-btn" onclick="showToast('Opening fine payment…', 'error')">
-                                <div class="qa-icon ic-red"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                                <div class="qa-label">Pay Fine</div>
-                            </div>
-                            <div class="qa-btn" onclick="showToast('Viewing saved books…', 'info')">
-                                <div class="qa-icon ic-purple"><i class="fa-solid fa-bookmark"></i></div>
-                                <div class="qa-label">Saved Books</div>
-                            </div>
-                            <div class="qa-btn" onclick="showToast('Opening support…', 'info')">
-                                <div class="qa-icon" style="background:rgba(136,146,176,0.12);color:var(--text-muted);">
-                                    <i class="fa-solid fa-headset"></i></div>
-                                <div class="qa-label">Get Help</div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
-            <!-- ACTIVITY FEED -->
-            <div class="section-card" style="margin-bottom:1.25rem;">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-list-ul"></i>
-                        Recent Activity
-                    </div>
-                    <a class="card-action">View All →</a>
+            <!-- ======== PROFILE ======== -->
+            <div class="page-section" id="sec-profile">
+                <div class="page-heading">
+                    <h2>My Profile</h2>
+                    <p>Manage your personal information</p>
                 </div>
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-dot ic-amber"><i class="fa-solid fa-triangle-exclamation"
-                                style="font-size:0.8rem;color:var(--warn);"></i></div>
-                        <div class="activity-body">
-                            <div class="activity-title">Overdue notice — <span>Data Structures & Algorithms</span></div>
-                            <div class="activity-time"><i class="fa-regular fa-clock" style="font-size:0.65rem;"></i> 2
-                                hours ago</div>
+                <div class="profile-header-card">
+                    <div class="profile-avatar">
+                        {% if photo %}
+                        <img src="{{ photo.url }}" alt="Profile Photo">
+                        {% else %}
+                        {{ request.user.first_name|slice:":1" }}
+                        {% endif %}
+                    </div>
+                    <div class="profile-header-info">
+                        <h2>{{full_name}} </h2>
+                        <p>{{enrollment}} </p>
+                        <p style="margin-top:0.4rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">Member since: July
+                            2022</p>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-user"></i>Personal Information</div>
+                    </div>
+                    <div style="padding:1.5rem;">
+                        <div class="profile-form-grid">
+                            <div class="form-group"><label>First Name</label><input type="text" value="{{ request.user.first_name}} "></div>
+                            <div class="form-group"><label>Last Name</label><input type="text" value="{{ request.user.last_name}}"></div>
+                            <div class="form-group"><label>Enrollment No.</label><input type="text" value="{{ enrollment}}"
+                                    readonly style="opacity:0.5;cursor:not-allowed;"></div>
+                            <div class="form-group"><label>Roll Number</label><input type="text" value="{{ enrollment}}"
+                                    readonly style="opacity:0.5;cursor:not-allowed;"></div>
+                            <div class="form-group"><label>Course</label><input type="text"
+                                    value="{{course}} " readonly
+                                    style="opacity:0.5;cursor:not-allowed;"></div>
+                            <div class="form-group"><label>Semester</label><select>
+                                    <option>Semester 1</option>
+                                    <option>Semester 2</option>
+                                    <option>Semester 3</option>
+                                    <option>Semester 4</option>
+                                    <option>Semester 5</option>
+                                    <option>Semester 6</option>
+                                </select></div>
+                            <div class="form-group"><label>Email Address</label><input type="email"
+                                    value="{{ request.user.email}}"></div>
+                            <div class="form-group"><label>Phone Number</label><input type="tel"
+                                    value="{{ student.mobile}}"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label><textarea> {{student.address}} </textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-outline">Discard Changes</button>
+                            <button class="btn-primary"
+                                onclick="showToast('Profile updated successfully!','success')"><i
+                                    class="fa-solid fa-check"></i> Save Changes</button>
                         </div>
                     </div>
-                    <div class="activity-item">
-                        <div class="activity-dot ic-blue"><i class="fa-solid fa-book"
-                                style="font-size:0.8rem;color:#60a5fa;"></i></div>
-                        <div class="activity-body">
-                            <div class="activity-title">Borrowed — <span>Computer Networks</span> by Andrew Tanenbaum
+                </div>
+            </div>
+
+            <!-- ======== SETTINGS ======== -->
+            <div class="page-section" id="sec-settings">
+                <div class="page-heading">
+                    <h2>Settings</h2>
+                    <p>Manage your account preferences</p>
+                </div>
+                <div class="settings-layout">
+                    <div class="settings-nav">
+                        <div class="settings-nav-item active" onclick="settingsTab(this,'set-notif')"><i
+                                class="fa-regular fa-bell"></i> Notifications</div>
+                        <div class="settings-nav-item" onclick="settingsTab(this,'set-privacy')"><i
+                                class="fa-solid fa-shield-halved"></i> Privacy</div>
+                        <div class="settings-nav-item" onclick="settingsTab(this,'set-password')"><i
+                                class="fa-solid fa-lock"></i> Password</div>
+                        <div class="settings-nav-item" onclick="settingsTab(this,'set-appear')"><i
+                                class="fa-solid fa-palette"></i> Appearance</div>
+                        <div class="settings-nav-item" onclick="settingsTab(this,'set-lang')"><i
+                                class="fa-solid fa-globe"></i> Language</div>
+                    </div>
+                    <div class="settings-panel">
+                        <!-- Notifications -->
+                        <div id="set-notif">
+                            <h3>Notification Preferences</h3>
+                            <p class="sub">Choose how and when you receive alerts.</p>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Due Date Reminders</strong><span>Get notified 3 days
+                                        before a book is due</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
                             </div>
-                            <div class="activity-time"><i class="fa-regular fa-clock" style="font-size:0.65rem;"></i>
-                                Apr 20, 2025</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-dot ic-green"><i class="fa-solid fa-rotate-left"
-                                style="font-size:0.8rem;color:var(--success);"></i></div>
-                        <div class="activity-body">
-                            <div class="activity-title">Returned — <span>Introduction to Algorithms</span></div>
-                            <div class="activity-time"><i class="fa-regular fa-clock" style="font-size:0.65rem;"></i>
-                                Apr 08, 2025</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-dot ic-amber"><i class="fa-solid fa-indian-rupee-sign"
-                                style="font-size:0.8rem;color:var(--accent);"></i></div>
-                        <div class="activity-body">
-                            <div class="activity-title">Fine paid — <span>₹20</span> for late return of Digital
-                                Electronics</div>
-                            <div class="activity-time"><i class="fa-regular fa-clock" style="font-size:0.65rem;"></i>
-                                Mar 30, 2025</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-dot ic-purple"><i class="fa-solid fa-id-card"
-                                style="font-size:0.8rem;color:var(--purple);"></i></div>
-                        <div class="activity-body">
-                            <div class="activity-title">Library card renewed for academic year <span>2025–26</span>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Overdue Alerts</strong><span>Immediate alert when a
+                                        book becomes overdue</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
                             </div>
-                            <div class="activity-time"><i class="fa-regular fa-clock" style="font-size:0.65rem;"></i>
-                                Jan 10, 2025</div>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Fine Notices</strong><span>Get notified when a fine is
+                                        added to your account</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>New Arrivals</strong><span>Notify when new books in
+                                        your subjects are added</span></div><label class="toggle-switch"><input
+                                        type="checkbox"><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Library Announcements</strong><span>Holiday notices,
+                                        events, and library updates</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Email Notifications</strong><span>Also send alerts to
+                                        your registered email</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row" style="border-bottom:none;">
+                                <div class="toggle-info"><strong>SMS Alerts</strong><span>Send SMS to your registered
+                                        mobile number</span></div><label class="toggle-switch"><input
+                                        type="checkbox"><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="form-actions" style="margin-top:1rem;"><button class="btn-primary"
+                                    onclick="showToast('Notification settings saved!','success')"><i
+                                        class="fa-solid fa-check"></i> Save Preferences</button></div>
+                        </div>
+                        <!-- Privacy -->
+                        <div id="set-privacy" style="display:none;">
+                            <h3>Privacy Settings</h3>
+                            <p class="sub">Control your data and privacy on GPCUL Library.</p>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Reading History</strong><span>Allow library to track
+                                        your reading history</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Profile Visibility</strong><span>Allow library staff to
+                                        view your profile details</span></div><label class="toggle-switch"><input
+                                        type="checkbox" checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row" style="border-bottom:none;">
+                                <div class="toggle-info"><strong>Data for Analytics</strong><span>Help improve services
+                                        with anonymized usage data</span></div><label class="toggle-switch"><input
+                                        type="checkbox"><span class="toggle-slider"></span></label>
+                            </div>
+                            <hr class="divider">
+                            <div style="margin-bottom:1rem;">
+                                <div
+                                    style="font-size:0.875rem;font-weight:700;color:var(--white);margin-bottom:0.25rem;">
+                                    Delete Reading History</div>
+                                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem;">Permanently
+                                    remove your borrowing history from this system.</div><button
+                                    class="tbl-btn tbl-btn-danger" onclick="showToast('History cleared','error')"><i
+                                        class="fa-solid fa-trash"></i> Clear History</button>
+                            </div>
+                        </div>
+                        <!-- Password -->
+                        <div id="set-password" style="display:none;">
+                            <h3>Change Password</h3>
+                            <p class="sub">Keep your account secure with a strong password.</p>
+                            <div class="form-group"><label>Current Password</label><input type="password"
+                                    placeholder="Enter current password"></div>
+                            <div class="form-group"><label>New Password</label><input type="password"
+                                    placeholder="Min 8 characters"></div>
+                            <div class="form-group"><label>Confirm New Password</label><input type="password"
+                                    placeholder="Repeat new password"></div>
+                            <div class="form-actions"><button class="btn-primary"
+                                    onclick="showToast('Password updated successfully!','success')"><i
+                                        class="fa-solid fa-lock"></i> Update Password</button></div>
+                        </div>
+                        <!-- Appearance -->
+                        <div id="set-appear" style="display:none;">
+                            <h3>Appearance</h3>
+                            <p class="sub">Customize how the interface looks.</p>
+                            <div class="form-group"><label>Theme</label><select>
+                                    <option selected>Dark (Default)</option>
+                                    <option>Light</option>
+                                    <option>System Default</option>
+                                </select></div>
+                            <div class="form-group"><label>Font Size</label><select>
+                                    <option>Small</option>
+                                    <option selected>Medium (Default)</option>
+                                    <option>Large</option>
+                                </select></div>
+                            <div class="toggle-row">
+                                <div class="toggle-info"><strong>Compact Mode</strong><span>Reduce spacing for more
+                                        content on screen</span></div><label class="toggle-switch"><input
+                                        type="checkbox"><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="toggle-row" style="border-bottom:none;">
+                                <div class="toggle-info"><strong>Animations</strong><span>Enable smooth transitions and
+                                        animations</span></div><label class="toggle-switch"><input type="checkbox"
+                                        checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="form-actions"><button class="btn-primary"
+                                    onclick="showToast('Appearance saved!','success')">Save</button></div>
+                        </div>
+                        <!-- Language -->
+                        <div id="set-lang" style="display:none;">
+                            <h3>Language &amp; Region</h3>
+                            <p class="sub">Set your preferred language and regional formats.</p>
+                            <div class="form-group"><label>Interface Language</label><select>
+                                    <option selected>English</option>
+                                    <option>हिन्दी (Hindi)</option>
+                                    <option>ਪੰਜਾਬੀ (Punjabi)</option>
+                                    <option>डोगरी (Dogri)</option>
+                                </select></div>
+                            <div class="form-group"><label>Date Format</label><select>
+                                    <option selected>DD/MM/YYYY</option>
+                                    <option>MM/DD/YYYY</option>
+                                    <option>YYYY-MM-DD</option>
+                                </select></div>
+                            <div class="form-group"><label>Time Zone</label><select>
+                                    <option selected>IST (UTC+5:30)</option>
+                                </select></div>
+                            <div class="form-actions"><button class="btn-primary"
+                                    onclick="showToast('Language settings saved!','success')">Save</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======== HELP ======== -->
+            <div class="page-section" id="sec-help">
+                <div class="page-heading">
+                    <h2>Help &amp; Support</h2>
+                    <p>Get answers and contact the library team</p>
+                </div>
+                <div class="help-grid">
+                    <div class="help-card">
+                        <div class="help-icon ic-blue"><i class="fa-solid fa-book-open"></i></div>
+                        <h4>Borrowing Guide</h4>
+                        <p>How to borrow, return, and renew books at GPCUL Library.</p>
+                    </div>
+                    <div class="help-card">
+                        <div class="help-icon ic-amber"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                        <h4>Fine Policy</h4>
+                        <p>Understand fine rates, waiver conditions, and payment methods.</p>
+                    </div>
+                    <div class="help-card">
+                        <div class="help-icon ic-green"><i class="fa-solid fa-id-card"></i></div>
+                        <h4>Library Card Help</h4>
+                        <p>Lost card, renewal procedures, and digital card usage.</p>
+                    </div>
+                    <div class="help-card">
+                        <div class="help-icon ic-purple"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <h4>Book Search Tips</h4>
+                        <p>How to find books using title, author, ISBN, or subject.</p>
+                    </div>
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <div
+                        style="font-family:var(--font-display);font-size:1.1rem;color:var(--white);margin-bottom:1rem;">
+                        Frequently Asked Questions</div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)"><span>How many books can I borrow at once?</span><i
+                                class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">You can borrow up to 5 books simultaneously. The limit is set by library
+                            policy for all students.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)"><span>How do I renew a book?</span><i
+                                class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Go to "Renew Books" from the sidebar or click the Renew button next to any
+                            active book. You can renew a book up to 2 times. Overdue books cannot be renewed.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)"><span>What is the fine for overdue books?</span><i
+                                class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">The current fine rate is ₹20 per day per book after the due date. Fines can
+                            be paid at the library counter or through the online payment gateway.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)"><span>How do I download my library card?</span><i
+                                class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Go to "My Library Card" from the sidebar. You can download the card as a PDF
+                            or save it as an image. The QR code can be scanned at the library entrance.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q" onclick="toggleFaq(this)"><span>I lost my library card. What should I
+                                do?</span><i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="faq-a">Contact the library counter immediately. A duplicate card can be issued for a
+                            fee of ₹50. Your digital card on this portal remains active.</div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <div class="card-header"
+                        style="padding:0 0 1rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem;">
+                        <div class="card-title"><i class="fa-solid fa-headset"></i>Contact Library</div>
+                    </div>
+                    <div class="profile-form-grid">
+                        <div class="form-group"><label>Subject</label><select>
+                                <option>General Query</option>
+                                <option>Book Not Available</option>
+                                <option>Fine Dispute</option>
+                                <option>Lost Book</option>
+                                <option>Technical Issue</option>
+                            </select></div>
+                        <div class="form-group"><label>Priority</label><select>
+                                <option>Normal</option>
+                                <option>Urgent</option>
+                            </select></div>
+                    </div>
+                    <div class="form-group"><label>Message</label><textarea
+                            placeholder="Describe your issue or query in detail…" style="min-height:120px;"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-primary"
+                            onclick="showToast('Query submitted! Library staff will respond within 24 hours.','success')"><i
+                                class="fa-solid fa-paper-plane"></i> Submit Query</button>
+                    </div>
+                    <hr class="divider">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;">
+                        <div style="text-align:center;">
+                            <div style="font-size:1.5rem;margin-bottom:0.5rem;">📍</div>
+                            <div style="font-size:0.8rem;color:var(--white);font-weight:600;margin-bottom:0.2rem;">
+                                Library Location</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">Main Block, Ground Floor<br>GPC
+                                Udhampur</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:1.5rem;margin-bottom:0.5rem;">🕒</div>
+                            <div style="font-size:0.8rem;color:var(--white);font-weight:600;margin-bottom:0.2rem;">
+                                Library Hours</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">Mon–Sat: 9 AM – 5 PM<br>Sunday:
+                                Closed</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:1.5rem;margin-bottom:0.5rem;">📞</div>
+                            <div style="font-size:0.8rem;color:var(--white);font-weight:600;margin-bottom:0.2rem;">Phone
+                            </div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">01992-270xxx<br>Ext. 112</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:1.5rem;margin-bottom:0.5rem;">✉️</div>
+                            <div style="font-size:0.8rem;color:var(--white);font-weight:600;margin-bottom:0.2rem;">Email
+                            </div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">library@gpcul.ac.in</div>
                         </div>
                     </div>
                 </div>
@@ -2163,15 +3820,10 @@
         </div><!-- /content -->
     </div><!-- /main -->
 
-    <!-- ============================================================
-       NOTIFICATION PANEL
-  ============================================================ -->
+    <!-- NOTIFICATION PANEL -->
     <div class="notif-overlay" id="notifOverlay" onclick="closeNotif(event)">
         <div class="notif-panel" onclick="event.stopPropagation()">
-            <div class="notif-header">
-                Notifications
-                <span onclick="closeNotif()">Mark all read</span>
-            </div>
+            <div class="notif-header">Notifications<span onclick="closeNotif()">Mark all read</span></div>
             <div class="notif-item unread">
                 <div class="notif-icon ic-amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="notif-body">
@@ -2203,78 +3855,109 @@
         </div>
     </div>
 
-    <!-- ============================================================
-       TOAST NOTIFICATION
-  ============================================================ -->
-    <div id="toast" style="
-    position:fixed; bottom:2rem; right:2rem; z-index:9999;
-    background:var(--card); border:1px solid var(--border-mid);
-    border-radius:var(--radius-sm); padding:0.85rem 1.25rem;
-    display:flex; align-items:center; gap:0.65rem;
-    font-size:0.85rem; font-weight:500; color:var(--white);
-    box-shadow:0 12px 40px rgba(0,0,0,0.5);
-    transform:translateY(100px); opacity:0;
-    transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    pointer-events:none; min-width:260px;
-  ">
+    <!-- TOAST -->
+    <div id="toast"
+        style="position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--card);border:1px solid var(--border-mid);border-radius:var(--radius-sm);padding:0.85rem 1.25rem;display:flex;align-items:center;gap:0.65rem;font-size:0.85rem;font-weight:500;color:var(--white);box-shadow:0 12px 40px rgba(0,0,0,0.5);transform:translateY(100px);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;min-width:260px;">
         <i id="toastIcon" class="fa-solid fa-circle-check"></i>
         <span id="toastMsg">Action completed.</span>
     </div>
 
-    <!-- ============================================================
-       JAVASCRIPT
-  ============================================================ -->
     <script>
-        /* --- Sidebar toggle (mobile) --- */
+        // PAGE LABELS
+        const pageLabels = {
+            'dashboard': 'Dashboard', 'my-books': 'My Books', 'search-books': 'Search Books',
+            'history': 'History', 'saved': 'Saved Books', 'library-card': 'My Library Card',
+            'fines': 'Fines & Dues', 'renew': 'Renew Books', 'notifications': 'Notifications',
+            'profile': 'My Profile', 'settings': 'Settings', 'help': 'Help & Support'
+        };
+
+        // NAVIGATE
+        function navigate(pageId, navEl) {
+            // hide all sections
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('sec-' + pageId).classList.add('active');
+            // update breadcrumb
+            document.getElementById('breadcrumbLabel').textContent = pageLabels[pageId] || pageId;
+            // update nav active
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if (navEl) navEl.classList.add('active');
+            else {
+                // find by data or text match
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    const onclick = item.getAttribute('onclick') || '';
+                    if (onclick.includes("'" + pageId + "'")) item.classList.add('active');
+                });
+            }
+            closeSidebar();
+            window.scrollTo(0, 0);
+        }
+
+        // SETTINGS TABS
+        function settingsTab(el, tabId) {
+            document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            ['set-notif', 'set-privacy', 'set-password', 'set-appear', 'set-lang'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const t = document.getElementById(tabId);
+            if (t) t.style.display = 'block';
+        }
+
+        // FAQ TOGGLE
+        function toggleFaq(el) {
+            const answer = el.nextElementSibling;
+            const icon = el.querySelector('i');
+            const isOpen = answer.classList.contains('open');
+            // close all
+            document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+            document.querySelectorAll('.faq-q i').forEach(i => i.style.transform = '');
+            if (!isOpen) {
+                answer.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // SEARCH FILTER PILLS
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', function () {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // SIDEBAR TOGGLE
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('sidebarOverlay').classList.toggle('open');
         }
-
         function closeSidebar() {
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('sidebarOverlay').classList.remove('open');
         }
 
-        /* --- Active nav item --- */
-        function setActive(el) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            closeSidebar();
-        }
+        // NOTIFICATION PANEL
+        function toggleNotif() { document.getElementById('notifOverlay').classList.toggle('open'); }
+        function closeNotif(e) { document.getElementById('notifOverlay').classList.remove('open'); }
 
-        /* --- Notification panel --- */
-        function toggleNotif() {
-            document.getElementById('notifOverlay').classList.toggle('open');
-        }
-
-        function closeNotif(e) {
-            document.getElementById('notifOverlay').classList.remove('open');
-        }
-
-        /* --- Toast --- */
+        // TOAST
         let toastTimer = null;
-
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toastIcon');
             const msgEl = document.getElementById('toastMsg');
-
             const config = {
                 success: { icon: 'fa-circle-check', color: 'var(--success)', border: 'rgba(52,211,153,0.3)' },
                 error: { icon: 'fa-circle-exclamation', color: 'var(--error)', border: 'rgba(248,113,113,0.3)' },
-                info: { icon: 'fa-circle-info', color: '#60a5fa', border: 'rgba(96,165,250,0.3)' },
+                info: { icon: 'fa-circle-info', color: '#60a5fa', border: 'rgba(96,165,250,0.3)' }
             };
-
             const c = config[type] || config.success;
-            icon.className = `fa-solid ${c.icon}`;
+            icon.className = 'fa-solid ' + c.icon;
             icon.style.color = c.color;
             toast.style.borderColor = c.border;
             msgEl.textContent = msg;
-
             toast.style.transform = 'translateY(0)';
             toast.style.opacity = '1';
-
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => {
                 toast.style.transform = 'translateY(100px)';
@@ -2282,15 +3965,16 @@
             }, 3000);
         }
 
-        /* --- Global search demo --- */
+        // GLOBAL SEARCH
         document.getElementById('globalSearch').addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && this.value.trim()) {
-                showToast(`Searching for "${this.value.trim()}"…`, 'info');
+                navigate('search-books', null);
+                document.getElementById('searchInput').value = this.value;
+                showToast('Searching for "' + this.value.trim() + '"…', 'info');
                 this.value = '';
             }
         });
     </script>
-
 </body>
 
 </html>

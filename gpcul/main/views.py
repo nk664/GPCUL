@@ -12,8 +12,7 @@ from django.shortcuts import redirect, render
 from .models import Student
 
 
-EMAIL_PATTERN = r"^[A-Za-z0-9]+[A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-
+EMAIL_PATTERN = r"^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 
 def home(request):
     return render(request, "index.html")
@@ -59,6 +58,7 @@ def std_dash(request):
 
     try:
         student = Student.objects.get(user=request.user)
+        full_name = f"{student.first_name}{student.last_name}"
         enrollment = student.enrollment
         course = student.course
         semester = student.semester
@@ -69,9 +69,12 @@ def std_dash(request):
 
     context = {
         "greeting": greeting,
+        "full_name": request.user.get_full_name(),
         "enrollment": enrollment,
         "course": course,
         "semester": semester,
+        "photo": student.photo,
+        "student": student,
     }
     return render(request, "dashboard/std_dash.html", context)
 
@@ -125,6 +128,8 @@ def std_register(request):
     except Exception as e:
         messages.error(request, f"Registration failed: {str(e)}")
         return render(request, "accounts/register.html")
+#def lib_dash(request):
+  #  return render(request, 'dashboard/lib_dash.html' )
 
 
 def std_login(request):
