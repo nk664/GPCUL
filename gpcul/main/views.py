@@ -39,7 +39,11 @@ def login_page(request):
         return render(request, "accounts/login.html")
 
     login(request, user)
-    return redirect("std_dash")
+
+
+    #role based redirection
+    try:
+        student = student.object.get(user=user)
 
 
 def forget(request):

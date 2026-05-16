@@ -4,7 +4,20 @@ from django.db import models
 # Create your models here.
 
 class Student(models.Model):
+    
+    ROLE_CHOICES = (
+        ('student', 'Student'),
+        ('librarian', 'Librarian'),
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Role
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default='student'
+    )
     
 
 
