@@ -28,22 +28,40 @@ def login_page(request):
 
     email = (request.POST.get("email") or "").strip()
     password = request.POST.get("password") or ""
+    role_input = (request.POST.get("role") or "").strip()  # set by role tabs in template
 
     if not email or not re.match(EMAIL_PATTERN, email):
         messages.error(request, "Enter a valid email address")
         return redirect("register")
 
+    # Try auth by username=email first (current behavior)
     user = authenticate(request, username=email, password=password)
+
+    # Fallback: some accounts may have email stored as the auth email field
+    if user is None:
+        user = authenticate(request, email=email, password=password)
+
     if user is None:
         messages.error(request, "Invalid email or password")
         return render(request, "accounts/login.html")
 
     login(request, user)
 
+    # role based redirection
+    student = Student.objects.filter(user=user).first()
 
-    #role based redirection
-    try:
-        student = student.object.get(user=user)
+    if not student:
+        messages.error(request, "Profile not found")
+        return redirect("login")
+
+    if role_input == "librarian" and student.role != "librarian":
+        messages.error(request, "You are not authorized as librarian")
+        return redirect("login")
+
+    if student.role == "librarian":
+        return redirect("lib_dash")
+
+    return redirect("std_dash")
 
 
 def forget(request):
@@ -60,23 +78,21 @@ def std_dash(request):
     else:
         greeting = "Good Evening 🌙"
 
-    try:
-        student = Student.objects.get(user=request.user)
-        full_name = f"{student.first_name}{student.last_name}"
-        enrollment = student.enrollment
-        course = student.course
-        semester = student.semester
-    except Student.DoesNotExist:
-        enrollment = ""
-        course = ""
-        semester = ""
+    student = Student.objects.filter(user=request.user).first()
+
+    if not student:
+        messages.error(request, "Student profile not found")
+        return redirect("login")
+
+
+
 
     context = {
         "greeting": greeting,
         "full_name": request.user.get_full_name(),
-        "enrollment": enrollment,
-        "course": course,
-        "semester": semester,
+        "enrollment": student.enrollment,
+        "course": student.course,
+        "semester": student.semester,
         "photo": student.photo,
         "student": student,
     }
@@ -132,8 +148,15 @@ def std_register(request):
     except Exception as e:
         messages.error(request, f"Registration failed: {str(e)}")
         return render(request, "accounts/register.html")
-#def lib_dash(request):
-  #  return render(request, 'dashboard/lib_dash.html' )
+    
+@login_required(login_url="login")
+def lib_dash(request):
+    student = Student.objects.filter(user=request.user).first()
+
+    if not student or student.role != "librarian":
+        messages.error(request, "Access denied")
+        return redirect("login")
+    return render(request, 'dashboard/lib_dash.html' )
 
 
 def std_login(request):

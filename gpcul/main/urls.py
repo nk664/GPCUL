@@ -6,11 +6,11 @@ from .import views
 urlpatterns = [
     path('',views.home, name = 'home'),
     path('login/',views.login_page, name = 'login'),
-    path('register',views.register, name = 'register'),
+    path('register/', views.register, name='register'),
     path('std_register/',views.std_register, name = 'std_register'),
-    path('forget',views.forget, name = 'forget'),
+    path('forget/', views.forget, name='forget'),
     path('std_dash/', views.std_dash, name = "std_dash"),
-   # path('lib_dash/', views.lib_dash, name = "lib_dash"),
+    path('lib_dash/', views.lib_dash, name = "lib_dash"),
     path('logout/', views.user_logout, name='logout'),
     
     # Password reset URLs

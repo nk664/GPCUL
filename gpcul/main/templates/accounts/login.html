@@ -831,6 +831,7 @@
             novalidate
           >
             {% csrf_token %}
+            <input type="hidden" name="role" id="roleInput" value="student" />
             {% if messages %}
             {% for message in messages %}
             <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-{{ message.tags }}{% endif %}">
@@ -936,7 +937,11 @@
         const isAdmin = tab.textContent.trim().startsWith("Admin");
         document.getElementById("loginId").placeholder = isAdmin
           ? "Staff ID or admin email"
-          : "e.g. 2023GPCUDH001 or email";
+          : "e.g. 2023GPCUDH001 or email";    
+
+      document.getElementById("roleInput").value = isAdmin
+        ? "librarian"
+        : "student";
       }
 
       /* --- Password visibility toggle --- */
