@@ -12,7 +12,8 @@ urlpatterns = [
     path('std_dash/', views.std_dash, name = "std_dash"),
     path('lib_dash/', views.lib_dash, name = "lib_dash"),
     path('logout/', views.user_logout, name='logout'),
-    
+    path('help/', views.help, name='help'),
+
     # Password reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='accounts/forget.html'), name='password_reset'),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name='accounts/forget.html'), name='password_reset_done'),

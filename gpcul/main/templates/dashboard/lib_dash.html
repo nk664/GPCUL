@@ -3387,10 +3387,11 @@
                             class="panel-action" onclick="showToast('Sending mass reminder…','warn')">Notify
                             All</button>
                     </div>
+                    {% for student in students %}
                     <div class="fine-row">
-                        <div class="fine-avatar" style="background:linear-gradient(135deg,#1a4fba,#8b5cf6);">RS</div>
+                        <div class="fine-avatar" style="background:linear-gradient(135deg,#1a4fba,#8b5cf6);">{{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}</div>
                         <div class="fine-info">
-                            <div class="fine-name">Rahul Sharma · 2023GPCUDH047</div>
+                            <div class="fine-name"> {{ student.first_name }} </div>
                             <div class="fine-book">Data Structures & Algorithms — 20 days overdue</div>
                         </div>
                         <div style="text-align:right;">
@@ -3402,66 +3403,12 @@
                                 class="act-btn act-danger" onclick="showToast('Waiver applied.','info')">Waive</button>
                         </div>
                     </div>
-                    <div class="fine-row">
-                        <div class="fine-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">MR</div>
-                        <div class="fine-info">
-                            <div class="fine-name">Mohan Raj · 2023GPCUDH021</div>
-                            <div class="fine-book">Strength of Materials — 50 days overdue</div>
+                        {% empty %}
+
+                        <div style="padding:1rem;color:white;">
+                            No students found.
                         </div>
-                        <div style="text-align:right;">
-                            <div class="fine-amount">₹100</div>
-                            <div class="fine-days">ME-201</div>
-                        </div>
-                        <div style="display:flex;gap:0.4rem;margin-left:0.5rem;"><button class="act-btn act-warn"
-                                onclick="showToast('Fine of ₹100 marked paid!','success')">Paid</button><button
-                                class="act-btn act-danger" onclick="showToast('Waiver applied.','info')">Waive</button>
-                        </div>
-                    </div>
-                    <div class="fine-row">
-                        <div class="fine-avatar" style="background:linear-gradient(135deg,#ec4899,#8b5cf6);">NK</div>
-                        <div class="fine-info">
-                            <div class="fine-name">Neha Kumari · 2022GPCUDH054</div>
-                            <div class="fine-book">Digital Electronics — 30 days overdue</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div class="fine-amount">₹60</div>
-                            <div class="fine-days">EC-201</div>
-                        </div>
-                        <div style="display:flex;gap:0.4rem;margin-left:0.5rem;"><button class="act-btn act-warn"
-                                onclick="showToast('Fine of ₹60 marked paid!','success')">Paid</button><button
-                                class="act-btn act-danger" onclick="showToast('Waiver applied.','info')">Waive</button>
-                        </div>
-                    </div>
-                    <div class="fine-row">
-                        <div class="fine-avatar" style="background:linear-gradient(135deg,#0d9488,#2563eb);">AT</div>
-                        <div class="fine-info">
-                            <div class="fine-name">Amit Thakur · 2023GPCUDH033</div>
-                            <div class="fine-book">Fluid Mechanics — 40 days overdue</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div class="fine-amount">₹80</div>
-                            <div class="fine-days">ME-302</div>
-                        </div>
-                        <div style="display:flex;gap:0.4rem;margin-left:0.5rem;"><button class="act-btn act-warn"
-                                onclick="showToast('Fine of ₹80 marked paid!','success')">Paid</button><button
-                                class="act-btn act-danger" onclick="showToast('Waiver applied.','info')">Waive</button>
-                        </div>
-                    </div>
-                    <div class="fine-row">
-                        <div class="fine-avatar" style="background:linear-gradient(135deg,#22c55e,#0d9488);">SP</div>
-                        <div class="fine-info">
-                            <div class="fine-name">Sanjay Pathak · 2024GPCUDH015</div>
-                            <div class="fine-book">Engineering Drawing — 10 days overdue</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div class="fine-amount">₹20</div>
-                            <div class="fine-days">ME-101</div>
-                        </div>
-                        <div style="display:flex;gap:0.4rem;margin-left:0.5rem;"><button class="act-btn act-warn"
-                                onclick="showToast('Fine of ₹20 marked paid!','success')">Paid</button><button
-                                class="act-btn act-danger" onclick="showToast('Waiver applied.','info')">Waive</button>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -3618,66 +3565,217 @@
                         <div class="panel-title"><i class="fa-solid fa-circle-plus"></i> Book Details</div>
                     </div>
                     <div class="panel-body">
-                        <div class="form-section-label">Basic Information</div>
-                        <div class="fgroup" style="margin-bottom:0.75rem;"><label class="flabel">Book
-                                Title</label><input type="text" class="finput" placeholder="Full title of the book" />
-                        </div>
-                        <div class="form-grid-2" style="margin-bottom:0.75rem;">
-                            <div class="fgroup"><label class="flabel">Author(s)</label><input type="text" class="finput"
-                                    placeholder="Primary author name" /></div>
-                            <div class="fgroup"><label class="flabel">Publisher</label><input type="text" class="finput"
-                                    placeholder="Publisher name" /></div>
-                        </div>
-                        <div class="form-grid-3" style="margin-bottom:0.75rem;">
-                            <div class="fgroup"><label class="flabel">ISBN</label><input type="text" class="finput"
-                                    placeholder="ISBN-13" /></div>
-                            <div class="fgroup"><label class="flabel">Edition</label><input type="text" class="finput"
-                                    placeholder="e.g. 3rd Edition" /></div>
-                            <div class="fgroup"><label class="flabel">Year Published</label><input type="number"
-                                    class="finput" placeholder="e.g. 2022" /></div>
-                        </div>
-                        <div class="form-section-label">Classification</div>
-                        <div class="form-grid-3" style="margin-bottom:0.75rem;">
-                            <div class="fgroup"><label class="flabel">Category</label><select class="fselect">
-                                    <option>Computer Science</option>
-                                    <option>Mathematics</option>
-                                    <option>Mechanical Engg.</option>
-                                    <option>Electrical Engg.</option>
-                                    <option>Civil Engg.</option>
-                                    <option>Electronics</option>
-                                    <option>General</option>
-                                </select></div>
-                            <div class="fgroup"><label class="flabel">Course Code</label><input type="text"
-                                    class="finput" placeholder="e.g. CS-101" /></div>
-                            <div class="fgroup"><label class="flabel">Shelf Location</label><input type="text"
-                                    class="finput" placeholder="e.g. A-12-3" /></div>
-                        </div>
-                        <div class="form-section-label">Stock</div>
-                        <div class="form-grid-3" style="margin-bottom:1.25rem;">
-                            <div class="fgroup"><label class="flabel">No. of Copies</label><input type="number"
-                                    class="finput" placeholder="e.g. 10" /></div>
-                            <div class="fgroup"><label class="flabel">Price per Copy (₹)</label><input type="number"
-                                    class="finput" placeholder="e.g. 450" /></div>
-                            <div class="fgroup"><label class="flabel">Language</label><select class="fselect">
-                                    <option>English</option>
-                                    <option>Hindi</option>
-                                    <option>Urdu</option>
-                                </select></div>
-                        </div>
-                        <div class="fgroup" style="margin-bottom:1.25rem;"><label class="flabel">Description /
-                                Notes</label><textarea class="ftextarea"
-                                placeholder="Brief description, notes, or remarks about this book…"></textarea></div>
-                        <div class="submit-row">
-                            <button class="fbtn fbtn-primary"
-                                onclick="showToast('Book added to catalogue successfully!','success')"><i
-                                    class="fa-solid fa-circle-check"></i> Add to Catalogue</button>
-                            <button class="fbtn fbtn-teal" onclick="showToast('Form cleared.','info')"><i
-                                    class="fa-solid fa-eraser"></i> Clear</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<form action="" method="POST">
 
+    {% csrf_token %}
+
+    <div class="form-section-label">
+        Basic Information
+    </div>
+
+    <!-- TITLE -->
+    <div class="fgroup" style="margin-bottom:0.75rem;">
+
+        <label class="flabel">
+            Book Title
+        </label>
+
+        <input type="text" name="title" class="finput" placeholder="Full title of the book" />
+
+    </div>
+
+    <!-- AUTHOR + PUBLISHER -->
+    <div class="form-grid-2" style="margin-bottom:0.75rem;">
+
+        <div class="fgroup">
+
+            <label class="flabel">
+                Author(s)
+            </label>
+
+            <input type="text" name="author" class="finput" placeholder="Primary author name" />
+
+        </div>
+
+        <div class="fgroup">
+
+            <label class="flabel">
+                Publisher
+            </label>
+
+            <input type="text" name="publisher" class="finput" placeholder="Publisher name" />
+
+        </div>
+
+    </div>
+
+    <!-- ISBN + EDITION + YEAR -->
+    <div class="form-grid-3" style="margin-bottom:0.75rem;">
+
+        <div class="fgroup">
+
+            <label class="flabel">
+                ISBN
+            </label>
+
+            <input type="text" name="isbn" class="finput" placeholder="ISBN-13" />
+
+        </div>
+
+        <div class="fgroup">
+
+            <label class="flabel">
+                Edition
+            </label>
+
+            <input type="text" name="edition" class="finput" placeholder="e.g. 3rd Edition" />
+
+        </div>
+
+        <div class="fgroup">
+
+            <label class="flabel">
+                Year Published
+            </label>
+
+            <input type="number" name="year_published" class="finput" placeholder="e.g. 2022" />
+
+        </div>
+
+    </div>
+
+    <!-- CLASSIFICATION -->
+    <div class="form-section-label">
+        Classification
+    </div>
+
+    <div class="form-grid-3" style="margin-bottom:0.75rem;">
+
+        <!-- CATEGORY -->
+        <div class="fgroup">
+
+            <label class="flabel">
+                Category
+            </label>
+
+            <select name="category" class="fselect">
+
+                <option>Computer Science</option>
+                <option>Mathematics</option>
+                <option>Mechanical Engg.</option>
+                <option>Electrical Engg.</option>
+                <option>Civil Engg.</option>
+                <option>Electronics</option>
+                <option>General</option>
+
+            </select>
+
+        </div>
+
+        <!-- COURSE CODE -->
+        <div class="fgroup">
+
+            <label class="flabel">
+                Course Code
+            </label>
+
+            <input type="text" name="course_code" class="finput" placeholder="e.g. CS-101" />
+
+        </div>
+
+        <!-- SHELF LOCATION -->
+        <div class="fgroup">
+
+            <label class="flabel">
+                Shelf Location
+            </label>
+
+            <input type="text" name="shelf_location" class="finput" placeholder="e.g. A-12-3" />
+
+        </div>
+
+    </div>
+
+    <!-- STOCK -->
+    <div class="form-section-label">
+        Stock
+    </div>
+
+    <div class="form-grid-3" style="margin-bottom:1.25rem;">
+
+        <!-- QUANTITY -->
+        <div class="fgroup">
+
+            <label class="flabel">
+                No. of Copies
+            </label>
+
+            <input type="number" name="quantity" class="finput" placeholder="e.g. 10" />
+
+        </div>
+
+        <!-- PRICE -->
+        <div class="fgroup">
+
+            <label class="flabel">
+                Price per Copy (₹)
+            </label>
+
+            <input type="number" name="price" class="finput" placeholder="e.g. 450" />
+
+        </div>
+
+        <!-- LANGUAGE -->
+        <div class="fgroup">
+
+            <label class="flabel">
+                Language
+            </label>
+
+            <select name="language" class="fselect">
+
+                <option>English</option>
+                <option>Hindi</option>
+                <option>Urdu</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="fgroup" style="margin-bottom:1.25rem;">
+
+        <label class="flabel">
+            Description / Notes
+        </label>
+
+        <textarea name="description" class="ftextarea"
+            placeholder="Brief description, notes, or remarks about this book…"></textarea>
+
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="submit-row">
+
+        <button type="submit" class="fbtn fbtn-primary">
+
+            <i class="fa-solid fa-circle-check"></i>
+            Add to Catalogue
+
+        </button>
+
+        <button type="reset" class="fbtn fbtn-teal">
+
+            <i class="fa-solid fa-eraser"></i>
+            Clear
+
+        </button>
+
+    </div>
+
+</form>
             <!-- ===== CATEGORIES ===== -->
             <div class="view-section" id="view-categories">
                 <div class="section-header">
@@ -3690,84 +3788,21 @@
                     <div class="cat-card" onclick="showToast('Opening Computer Science books…','info')">
                         <div class="cat-icon">💻</div>
                         <div class="cat-name">Computer Science</div>
-                        <div class="cat-count">842 titles · 3,100 copies</div>
+                        <div class="cat-count">00 titles · 000 copies</div>
                         <div class="cat-bar">
                             <div class="cat-fill" style="width:84%;background:var(--blue-bright);"></div>
                         </div>
                     </div>
-                    <div class="cat-card" onclick="showToast('Opening Mathematics books…','info')">
-                        <div class="cat-icon">📐</div>
-                        <div class="cat-name">Mathematics</div>
-                        <div class="cat-count">614 titles · 2,400 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:61%;background:var(--success);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening Mechanical Engg. books…','info')">
-                        <div class="cat-icon">⚙️</div>
-                        <div class="cat-name">Mechanical Engg.</div>
-                        <div class="cat-count">578 titles · 2,200 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:57%;background:var(--warn);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening Electrical Engg. books…','info')">
-                        <div class="cat-icon">⚡</div>
-                        <div class="cat-name">Electrical Engg.</div>
-                        <div class="cat-count">531 titles · 1,950 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:53%;background:var(--accent);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening Civil Engg. books…','info')">
-                        <div class="cat-icon">🏗️</div>
-                        <div class="cat-name">Civil Engg.</div>
-                        <div class="cat-count">487 titles · 1,800 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:48%;background:var(--teal-light);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening Electronics books…','info')">
-                        <div class="cat-icon">📡</div>
-                        <div class="cat-name">Electronics</div>
-                        <div class="cat-count">412 titles · 1,600 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:41%;background:var(--purple);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening Physics books…','info')">
-                        <div class="cat-icon">🔭</div>
-                        <div class="cat-name">Physics</div>
-                        <div class="cat-count">324 titles · 1,200 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:32%;background:var(--pink);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening Chemistry books…','info')">
-                        <div class="cat-icon">🧪</div>
-                        <div class="cat-name">Chemistry</div>
-                        <div class="cat-count">289 titles · 1,100 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:28%;background:var(--danger);"></div>
-                        </div>
-                    </div>
-                    <div class="cat-card" onclick="showToast('Opening General books…','info')">
-                        <div class="cat-icon">📚</div>
-                        <div class="cat-name">General / Reference</div>
-                        <div class="cat-count">207 titles · 840 copies</div>
-                        <div class="cat-bar">
-                            <div class="cat-fill" style="width:20%;background:var(--text-dim);"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+                   
+                    
+                    
+                    
             <!-- ===== MEMBERS ===== -->
-            <div class="view-section" id="view-members">
+            <div class="view-section " id="view-members">
                 <div class="section-header">
                     <div>
                         <div class="section-title">All Students</div>
-                        <div class="section-sub">1,342 active members</div>
+                        <div class="section-sub">0 active members</div>
                     </div>
                     <div style="display:flex;gap:0.75rem;">
                         <div class="section-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text"
@@ -3777,6 +3812,7 @@
                                 class="fa-solid fa-user-plus"></i> Add Student</button>
                     </div>
                 </div>
+<h1 style="color:white;">STUDENT SECTION WORKING</h1>
                 <div class="panel">
                     <div class="panel-header">
                         <div class="panel-title"><i class="fa-solid fa-table"></i> Student Directory</div><button
@@ -3797,20 +3833,21 @@
                                 </tr>
                             </thead>
                             <tbody>
+                            {% for student in students %}
                                 <tr>
                                     <td>
                                         <div class="student-cell">
                                             <div class="stu-avatar"
                                                 style="background:linear-gradient(135deg,#1a4fba,#8b5cf6);">RS</div>
                                             <div>
-                                                <div class="stu-name">Rahul Sharma</div>
-                                                <div class="stu-id">rahul@gpcudh.edu</div>
+                                                <div class="stu-name"> {{student.full_name}} </div>
+                                                <div class="stu-id">{{student.email}} </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="font-family:monospace;font-size:0.75rem;">2023GPCUDH047</td>
-                                    <td><span class="badge b-blue">CS Engg</span></td>
-                                    <td>3rd</td>
+                                    <td style="font-family:monospace;font-size:0.75rem;">{{student.enrollment}}</td>
+                                    <td><span class="badge b-blue">{{student.branch}}</span></td>
+                                    <td>{{student.sem}}</td>
                                     <td>2</td>
                                     <td style="color:var(--danger);font-weight:700;">₹40</td>
                                     <td><span class="badge b-warn">Has Dues</span></td>
@@ -3821,108 +3858,14 @@
                                                 onclick="showToast('Account suspended.','warn')">Suspend</button></div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div class="student-cell">
-                                            <div class="stu-avatar"
-                                                style="background:linear-gradient(135deg,#0d9488,#2563eb);">PK</div>
-                                            <div>
-                                                <div class="stu-name">Priya Kumari</div>
-                                                <div class="stu-id">priya@gpcudh.edu</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="font-family:monospace;font-size:0.75rem;">2022GPCUDH031</td>
-                                    <td><span class="badge b-ok">Mech Engg</span></td>
-                                    <td>5th</td>
-                                    <td>1</td>
-                                    <td style="color:var(--success);">₹0</td>
-                                    <td><span class="badge b-ok">Active</span></td>
-                                    <td>
-                                        <div style="display:flex;gap:0.4rem;"><button class="act-btn act-primary"
-                                                onclick="showToast('Viewing Priya Kumari profile…','info')">View</button><button
-                                                class="act-btn act-warn"
-                                                onclick="showToast('Card renewed!','success')">Renew</button></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="student-cell">
-                                            <div class="stu-avatar"
-                                                style="background:linear-gradient(135deg,#f59e0b,#ef4444);">AM</div>
-                                            <div>
-                                                <div class="stu-name">Arjun Mehta</div>
-                                                <div class="stu-id">arjun@gpcudh.edu</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="font-family:monospace;font-size:0.75rem;">2024GPCUDH008</td>
-                                    <td><span class="badge b-blue">CS Engg</span></td>
-                                    <td>1st</td>
-                                    <td>1</td>
-                                    <td style="color:var(--success);">₹0</td>
-                                    <td><span class="badge b-ok">Active</span></td>
-                                    <td>
-                                        <div style="display:flex;gap:0.4rem;"><button class="act-btn act-primary"
-                                                onclick="showToast('Viewing Arjun Mehta profile…','info')">View</button><button
-                                                class="act-btn act-warn"
-                                                onclick="showToast('Card renewed!','success')">Renew</button></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="student-cell">
-                                            <div class="stu-avatar"
-                                                style="background:linear-gradient(135deg,#8b5cf6,#ec4899);">SD</div>
-                                            <div>
-                                                <div class="stu-name">Simran Devi</div>
-                                                <div class="stu-id">simran@gpcudh.edu</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="font-family:monospace;font-size:0.75rem;">2023GPCUDH062</td>
-                                    <td><span class="badge b-warn">Electrical</span></td>
-                                    <td>3rd</td>
-                                    <td>1</td>
-                                    <td style="color:var(--success);">₹0</td>
-                                    <td><span class="badge b-ok">Active</span></td>
-                                    <td>
-                                        <div style="display:flex;gap:0.4rem;"><button class="act-btn act-primary"
-                                                onclick="showToast('Viewing Simran Devi profile…','info')">View</button><button
-                                                class="act-btn act-warn"
-                                                onclick="showToast('Card renewed!','success')">Renew</button></div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="student-cell">
-                                            <div class="stu-avatar"
-                                                style="background:linear-gradient(135deg,#22c55e,#0d9488);">VK</div>
-                                            <div>
-                                                <div class="stu-name">Vikram Kumar</div>
-                                                <div class="stu-id">vikram@gpcudh.edu</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="font-family:monospace;font-size:0.75rem;">2022GPCUDH017</td>
-                                    <td><span class="badge b-teal">Civil Engg</span></td>
-                                    <td>5th</td>
-                                    <td>0</td>
-                                    <td style="color:var(--success);">₹0</td>
-                                    <td><span class="badge b-ok">Active</span></td>
-                                    <td>
-                                        <div style="display:flex;gap:0.4rem;"><button class="act-btn act-primary"
-                                                onclick="showToast('Viewing Vikram Kumar profile…','info')">View</button><button
-                                                class="act-btn act-danger"
-                                                onclick="showToast('Account suspended.','warn')">Suspend</button></div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
+        </div>
             <!-- ===== REGISTER ===== -->
             <div class="view-section" id="view-register">
                 <div class="section-header">

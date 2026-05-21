@@ -1,43 +1,5 @@
-# Fix Database Data Issue - TODO Steps
-
-## Step 1: ✅ Code Updates Applied (MEDIA + Debug)
-
-## Step 2: Install Pillow for ImageField
-
-```
-cd gpcul
-pip install Pillow
-```
-
-## Step 3: Run Server
-
-```
-python manage.py runserver
-```
-
-## Step 4: Test Registration
-
-- Visit http://127.0.0.1:8000/register
-- Fill ALL fields (especially date YYYY-MM-DD, photo optional)
-- Submit → should see "registration successful" message
-- Check terminal for DEBUG prints
-
-## Step 5: Verify Data
-
-```
-python manage.py shell
->>> from main.models import Student
->>> Student.objects.count()  # Should be 1+
->>> Student.objects.all()
-```
-
-## Step 6: Check Admin
-
-```
-python manage.py createsuperuser
-```
-
-- Visit http://127.0.0.1:8000/admin/main/student/
-- Login & see Students
-
-## Step 7: [ ] Mark Complete
+- [x] Inspect current Django project errors (run `python gpcul/manage.py check`)
+- [x] Fix ImportError by adding missing `Book` model (fields used in `main/views.py`)
+- [x] Register `Book` in `main/admin.py`
+- [x] Create migrations and run `python gpcul/manage.py migrate`
+- [x] Rerun `python gpcul/manage.py check` and `python gpcul/manage.py test`

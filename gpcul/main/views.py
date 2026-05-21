@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
-from .models import Student
+from .models import Book, Student
+
 
 
 EMAIL_PATTERN = r"^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
@@ -17,6 +18,8 @@ EMAIL_PATTERN = r"^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
 def home(request):
     return render(request, "index.html")
 
+def help(request):
+    return render(request,"help.html")
 
 def register(request):
     return render(request, "accounts/register.html")
@@ -149,6 +152,8 @@ def std_register(request):
         messages.error(request, f"Registration failed: {str(e)}")
         return render(request, "accounts/register.html")
     
+    # librarian login
+    
 @login_required(login_url="login")
 def lib_dash(request):
     student = Student.objects.filter(user=request.user).first()
@@ -156,15 +161,85 @@ def lib_dash(request):
     if not student or student.role != "librarian":
         messages.error(request, "Access denied")
         return redirect("login")
-    return render(request, 'dashboard/lib_dash.html' )
+    
+    students = Student.objects.all()
+    
+    return render(request, 'dashboard/lib_dash.html',{
+        'students':students})
+
 
 
 def std_login(request):
     # Kept for backward compatibility, but the app uses `login_page`.
     return login_page(request)
 
-
+#logout logic
 def user_logout(request):
     logout(request)
     return redirect("login")
+
+#Adding a book from librarian end
+
+def librarian_dashboard(request):
+
+    # ADD BOOK
+    if request.method == "POST":
+
+        # BASIC INFORMATION
+        title = request.POST.get("title")
+        author = request.POST.get("author")
+        publisher = request.POST.get("publisher")
+        isbn = request.POST.get("isbn")
+        edition = request.POST.get("edition")
+        year_published = request.POST.get("year_published")
+
+        # CLASSIFICATION
+        category = request.POST.get("category")
+        course_code = request.POST.get("course_code")
+        shelf_location = request.POST.get("shelf_location")
+
+        # STOCK
+        quantity = request.POST.get("quantity")
+        price = request.POST.get("price")
+        language = request.POST.get("language")
+
+        # EXTRA
+        description = request.POST.get("description")
+
+        # SAVE BOOK
+        Book.objects.create(
+
+            # BASIC INFORMATION
+            title=title,
+            author=author,
+            publisher=publisher,
+            isbn=isbn,
+            edition=edition,
+            year_published=year_published,
+
+            # CLASSIFICATION
+            category=category,
+            course_code=course_code,
+            shelf_location=shelf_location,
+
+            # STOCK
+            quantity=quantity,
+            available=quantity,
+            price=price,
+            language=language,
+
+            # EXTRA
+            description=description
+        )
+
+        return redirect('lib_dash')
+
+    # SHOW ALL BOOKS
+    books = Book.objects.all()
+
+    context = {
+        "books": books
+    }
+
+    return render(request, "lib_dash.html", context)
 
